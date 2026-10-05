@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" width="800" height="440" font-family="'Segoe UI',Arial,sans-serif">
+  <defs>
+    <style>
+      .band-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; fill: #B35A07; }
+      .ent-title { font-size: 13px; font-weight: 700; fill: #382F2D; }
+      .ent-sub { font-size: 10.5px; fill: #76696A; }
+      .edge-label { font-size: 10.5px; fill: #76696A; }
+      .hint { font-size: 11px; fill: #76696A; }
+    </style>
+  </defs>
+
+  <rect width="800" height="440" rx="10" fill="#FBFAF8" />
+
+  <!-- Bands -->
+  <rect x="30" y="40" width="220" height="330" rx="10" fill="#F3F0EC" stroke="#E2DCD6" />
+  <text x="46" y="64" class="band-label">Internet</text>
+
+  <rect x="300" y="40" width="300" height="330" rx="10" fill="#F3F0EC" stroke="#E2DCD6" />
+  <text x="316" y="64" class="band-label">Rete aziendale</text>
+
+  <!-- Pan/zoom viewport indicator -->
+  <rect x="20" y="30" width="300" height="200" rx="8" fill="none" stroke="#F08019" stroke-width="2" stroke-dasharray="6 5" opacity="0.8">
+    <animate attributeName="x" values="20;480;20" dur="7s" repeatCount="indefinite" />
+    <animate attributeName="width" values="300;260;300" dur="7s" repeatCount="indefinite" />
+  </rect>
+
+  <!-- Entity: Utente -->
+  <g>
+    <rect x="60" y="100" width="160" height="60" rx="8" fill="#FFFFFF" stroke="#E2DCD6" />
+    <circle cx="86" cy="130" r="14" fill="#FDEBD9" />
+    <text x="86" y="134" text-anchor="middle" font-size="10" font-weight="700" fill="#B35A07">UTE</text>
+    <text x="110" y="126" class="ent-title">Utente</text>
+    <text x="110" y="140" class="ent-sub">browser</text>
+  </g>
+
+  <!-- Entity: API Gateway -->
+  <g>
+    <rect x="330" y="100" width="160" height="60" rx="8" fill="#FFFFFF" stroke="#F08019" stroke-width="2">
+      <animate attributeName="stroke-opacity" values="1;0.4;1" dur="2.4s" repeatCount="indefinite" />
+    </rect>
+    <circle cx="356" cy="130" r="14" fill="#FDEBD9" />
+    <text x="356" y="134" text-anchor="middle" font-size="9.5" font-weight="700" fill="#B35A07">API</text>
+    <text x="380" y="126" class="ent-title">API Gateway</text>
+    <text x="380" y="140" class="ent-sub">Azure APIM</text>
+  </g>
+
+  <!-- Entity: Database -->
+  <g>
+    <rect x="330" y="230" width="160" height="60" rx="8" fill="#FFFFFF" stroke="#E2DCD6" />
+    <circle cx="356" cy="260" r="14" fill="#FDEBD9" />
+    <text x="356" y="264" text-anchor="middle" font-size="9.5" font-weight="700" fill="#B35A07">SQL</text>
+    <text x="380" y="256" class="ent-title">Database ordini</text>
+    <text x="380" y="270" class="ent-sub">Azure SQL</text>
+  </g>
+
+  <!-- Edge utente -> gateway, animated dash flow -->
+  <path d="M 220 130 H 330" fill="none" stroke="#382F2D" stroke-width="2" marker-end="url(#arrow)" />
+  <path d="M 220 130 H 330" fill="none" stroke="#F08019" stroke-width="2.5" stroke-dasharray="6 10" opacity="0.9">
+    <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="1.1s" repeatCount="indefinite" />
+  </path>
+  <text x="235" y="122" class="edge-label">HTTPS</text>
+
+  <!-- Edge gateway -> db -->
+  <path d="M 410 160 V 230" fill="none" stroke="#382F2D" stroke-width="2" marker-end="url(#arrow)" />
+  <path d="M 410 160 V 230" fill="none" stroke="#F08019" stroke-width="2.5" stroke-dasharray="6 10" opacity="0.9">
+    <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="1.1s" begin="0.4s" repeatCount="indefinite" />
+  </path>
+  <text x="415" y="198" class="edge-label">TCP 1433</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#382F2D" />
+    </marker>
+  </defs>
+
+  <!-- Zoom controls -->
+  <g transform="translate(650,330)">
+    <rect x="-70" y="-18" width="150" height="36" rx="18" fill="#FFFFFF" stroke="#E2DCD6" />
+    <text x="-50" y="6" text-anchor="middle" font-size="16" fill="#382F2D">−</text>
+    <text x="0" y="5" text-anchor="middle" font-size="11" fill="#382F2D" font-family="monospace">100%</text>
+    <text x="50" y="6" text-anchor="middle" font-size="16" fill="#382F2D">+</text>
+  </g>
+
+  <!-- Floating toolbar -->
+  <g transform="translate(730,400)">
+    <circle r="20" fill="#F08019">
+      <animate attributeName="r" values="20;22;20" dur="1.8s" repeatCount="indefinite" />
+    </circle>
+    <path d="M-6,-6 L6,6 M-6,6 L6,-6" stroke="#FFFFFF" stroke-width="0" />
+    <path d="M -7 2 L -2 7 L 8 -3" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <text x="40" y="410" class="hint">Rotella: zoom · trascina: pan · clic su un'entità: dettaglio nel pannello laterale</text>
+</svg>

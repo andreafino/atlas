@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" font-family="'Segoe UI',Arial,sans-serif">
+  <defs>
+    <style>
+      .ent-title { font-size: 12.5px; font-weight: 700; fill: #382F2D; }
+      .step-label { font-size: 12px; fill: #76696A; }
+      .kicker { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; fill: #B35A07; }
+    </style>
+  </defs>
+
+  <rect width="800" height="300" rx="10" fill="#FBFAF8" />
+
+  <text x="30" y="34" class="kicker">Flusso 01 · Creazione di un ordine</text>
+
+  <!-- step caption cycling -->
+  <text x="30" y="58" class="step-label">
+    <animate attributeName="opacity" values="0;1;1;0" dur="4.5s" keyTimes="0;0.05;0.3;0.33" repeatCount="indefinite" />
+    Passo 1 di 3 — Utente → API Gateway: invio della richiesta di ordine
+  </text>
+  <text x="30" y="58" class="step-label" opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1;0" dur="4.5s" keyTimes="0;0.33;0.38;0.63;0.66" repeatCount="indefinite" />
+    Passo 2 di 3 — API Gateway → Database: scrittura dell'ordine
+  </text>
+  <text x="30" y="58" class="step-label" opacity="0">
+    <animate attributeName="opacity" values="0;0;1;1;0" dur="4.5s" keyTimes="0;0.66;0.71;0.96;1" repeatCount="indefinite" />
+    Passo 3 di 3 — Database → API Gateway: conferma scrittura
+  </text>
+
+  <!-- Entities -->
+  <g>
+    <rect x="40" y="130" width="160" height="60" rx="8" fill="#FFFFFF" stroke="#E2DCD6" />
+    <text x="120" y="165" text-anchor="middle" class="ent-title">Utente</text>
+  </g>
+  <g>
+    <rect x="320" y="130" width="160" height="60" rx="8" fill="#FFFFFF" stroke="#E2DCD6" />
+    <text x="400" y="165" text-anchor="middle" class="ent-title">API Gateway</text>
+  </g>
+  <g>
+    <rect x="600" y="130" width="160" height="60" rx="8" fill="#FFFFFF" stroke="#E2DCD6" />
+    <text x="680" y="165" text-anchor="middle" class="ent-title">Database</text>
+  </g>
+
+  <!-- Edge 1: Utente -> Gateway, highlighted during step 1 -->
+  <path d="M200 160 H320" fill="none" stroke="#382F2D" stroke-width="2" marker-end="url(#arrowF)" />
+  <path d="M200 160 H320" fill="none" stroke="#F08019" stroke-width="4" stroke-linecap="round">
+    <animate attributeName="opacity" values="1;1;0;0;0;0;1" dur="4.5s" keyTimes="0;0.28;0.33;0.63;0.66;0.96;1" repeatCount="indefinite" />
+  </path>
+
+  <!-- Edge 2: Gateway -> Database, highlighted during step 2 -->
+  <path d="M480 160 H600" fill="none" stroke="#382F2D" stroke-width="2" marker-end="url(#arrowF)" />
+  <path d="M480 160 H600" fill="none" stroke="#F08019" stroke-width="4" stroke-linecap="round">
+    <animate attributeName="opacity" values="0;0;1;1;0;0;0" dur="4.5s" keyTimes="0;0.33;0.38;0.61;0.66;0.96;1" repeatCount="indefinite" />
+  </path>
+
+  <!-- Edge 3 (reverse confirm), highlighted during step 3 -->
+  <path d="M600 180 H480" fill="none" stroke="#382F2D" stroke-width="2" marker-end="url(#arrowFRev)" />
+  <path d="M600 180 H480" fill="none" stroke="#F08019" stroke-width="4" stroke-linecap="round">
+    <animate attributeName="opacity" values="0;0;0;0;1;1;0" dur="4.5s" keyTimes="0;0.33;0.38;0.66;0.71;0.96;1" repeatCount="indefinite" />
+  </path>
+
+  <defs>
+    <marker id="arrowF" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#382F2D" />
+    </marker>
+    <marker id="arrowFRev" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto-start-reverse">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#382F2D" />
+    </marker>
+  </defs>
+
+  <!-- Playback controls -->
+  <g transform="translate(400,250)">
+    <rect x="-90" y="-18" width="180" height="36" rx="18" fill="#FFFFFF" stroke="#E2DCD6" />
+    <path d="M-62,-7 L-62,7 L-50,0 Z" fill="#382F2D" />
+    <path d="M-10,-9 L4,0 L-10,9 Z" fill="#F08019">
+      <animateTransform attributeName="transform" type="scale" values="1;1.15;1" dur="1.2s" repeatCount="indefinite" additive="sum" />
+    </path>
+    <rect x="46" y="-8" width="4" height="16" fill="#382F2D" />
+    <rect x="56" y="-8" width="4" height="16" fill="#382F2D" />
+  </g>
+</svg>

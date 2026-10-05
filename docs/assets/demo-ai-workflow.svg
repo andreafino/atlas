@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 260" width="860" height="260" font-family="'Segoe UI',Arial,sans-serif">
+  <defs>
+    <style>
+      .box-title { font-size: 12.5px; font-weight: 700; fill: #382F2D; }
+      .box-sub { font-size: 10.5px; fill: #76696A; }
+      .arrow-flow { stroke: #F08019; stroke-width: 2.5; fill: none; stroke-dasharray: 5 8; }
+    </style>
+    <marker id="arrowAI" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#382F2D" />
+    </marker>
+  </defs>
+
+  <rect width="860" height="260" rx="10" fill="#FBFAF8" />
+
+  <!-- Step 1: schema doc -->
+  <g>
+    <rect x="20" y="90" width="150" height="80" rx="8" fill="#FFFFFF" stroke="#E2DCD6">
+      <animate attributeName="stroke" values="#E2DCD6;#F08019;#E2DCD6" dur="6s" begin="0s" keyTimes="0;0.08;0.2" repeatCount="indefinite" />
+    </rect>
+    <text x="95" y="122" text-anchor="middle" class="box-title">AI_DIAGRAM</text>
+    <text x="95" y="136" text-anchor="middle" class="box-title">_SCHEMA.md</text>
+    <text x="95" y="154" text-anchor="middle" class="box-sub">incolla + descrivi</text>
+  </g>
+
+  <path class="arrow-flow" d="M170 130 H230" marker-end="url(#arrowAI)">
+    <animate attributeName="stroke-dashoffset" from="0" to="-26" dur="1s" repeatCount="indefinite" />
+  </path>
+
+  <!-- Step 2: AI chat -->
+  <g>
+    <rect x="235" y="90" width="150" height="80" rx="8" fill="#FFFFFF" stroke="#E2DCD6">
+      <animate attributeName="stroke" values="#E2DCD6;#F08019;#E2DCD6" dur="6s" begin="1s" keyTimes="0;0.08;0.2" repeatCount="indefinite" />
+    </rect>
+    <text x="310" y="122" text-anchor="middle" class="box-title">Chat AI</text>
+    <text x="310" y="138" text-anchor="middle" class="box-sub">ChatGPT · Gemini</text>
+    <text x="310" y="152" text-anchor="middle" class="box-sub">Claude · ecc.</text>
+  </g>
+
+  <path class="arrow-flow" d="M385 130 H445" marker-end="url(#arrowAI)">
+    <animate attributeName="stroke-dashoffset" from="0" to="-26" dur="1s" begin="0.25s" repeatCount="indefinite" />
+  </path>
+
+  <!-- Step 3: json file -->
+  <g>
+    <rect x="450" y="90" width="130" height="80" rx="8" fill="#FFFFFF" stroke="#E2DCD6">
+      <animate attributeName="stroke" values="#E2DCD6;#F08019;#E2DCD6" dur="6s" begin="2s" keyTimes="0;0.08;0.2" repeatCount="indefinite" />
+    </rect>
+    <text x="515" y="128" text-anchor="middle" class="box-title">diagramma</text>
+    <text x="515" y="144" text-anchor="middle" class="box-title">.json</text>
+    <text x="515" y="160" text-anchor="middle" class="box-sub">risposta pulita</text>
+  </g>
+
+  <path class="arrow-flow" d="M580 130 H640" marker-end="url(#arrowAI)">
+    <animate attributeName="stroke-dashoffset" from="0" to="-26" dur="1s" begin="0.5s" repeatCount="indefinite" />
+  </path>
+
+  <!-- Step 4: Apri file -->
+  <g>
+    <rect x="645" y="90" width="150" height="80" rx="8" fill="#FFFFFF" stroke="#E2DCD6">
+      <animate attributeName="stroke" values="#E2DCD6;#F08019;#E2DCD6" dur="6s" begin="3s" keyTimes="0;0.08;0.2" repeatCount="indefinite" />
+    </rect>
+    <text x="720" y="122" text-anchor="middle" class="box-title">"Apri file"</text>
+    <text x="720" y="138" text-anchor="middle" class="box-sub">nella barra strumenti</text>
+    <text x="720" y="152" text-anchor="middle" class="box-sub">dell'editor Atlas</text>
+  </g>
+
+  <!-- Loop back arrow: editor -> integra/modifica -> back to AI chat (manual refine) -->
+  <path d="M 720 170 C 720 220 300 230 160 200 C 110 188 95 175 95 171" fill="none" stroke="#76696A" stroke-width="1.6" stroke-dasharray="3 5" marker-end="url(#arrowAI)" opacity="0.8" />
+  <text x="420" y="225" text-anchor="middle" class="box-sub">diagramma importato → integra e modifica a mano nell'editor, oppure rifinisci con l'AI e reimporta</text>
+
+  <text x="430" y="30" text-anchor="middle" class="box-title">Dalla descrizione testuale al diagramma, in 4 passi</text>
+</svg>
