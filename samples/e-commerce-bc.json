@@ -1,0 +1,2691 @@
+{
+  "kind": "eos-architetture-diagramma",
+  "formatVersion": 1,
+  "title": "VALORITALIA - impegno Vino",
+  "versions": [
+    {
+      "numero": 0,
+      "diagramma": {
+        "bands": [
+          {
+            "l": "UTENTI",
+            "x": 40,
+            "y": 40,
+            "w": 270,
+            "h": 140
+          },
+          {
+            "l": "BUSINESS CENTRAL · SAAS",
+            "x": 40,
+            "y": 210,
+            "w": 270,
+            "h": 380
+          },
+          {
+            "l": "SOTTOSCRIZIONE AZURE INTEGRAZIONE",
+            "x": 320,
+            "y": 210,
+            "w": 560,
+            "h": 510
+          },
+          {
+            "l": "CUSTOMER ENGAGEMENT · DATAVERSE",
+            "x": 1160,
+            "y": 210,
+            "w": 280,
+            "h": 380
+          },
+          {
+            "l": "TENANT ENTRA ID AZIENDALE",
+            "x": 40,
+            "y": 620,
+            "w": 270,
+            "h": 140
+          }
+        ],
+        "entities": [
+          {
+            "id": "user",
+            "n": "Operatore BC",
+            "s": [
+              "avvia l'impegno vino",
+              "dalla testata dell'operazione"
+            ],
+            "mono": "USR",
+            "band": "Utenti",
+            "x": 60,
+            "y": 80,
+            "desc": "L'utente preme il pulsante sulla testata dell'operazione di certificazione vino. Non attende più l'elaborazione di CE: vede l'operazione in stato Inviato e poi l'esito."
+          },
+          {
+            "id": "bc",
+            "n": "Business Central",
+            "s": [
+              "origine del comando di impegno"
+            ],
+            "icon": "bc",
+            "band": "Business Central · SaaS",
+            "x": 60,
+            "y": 260,
+            "h": 306,
+            "desc": "Genera il RequestId, registra SEND e pubblica il comando su Service Bus. Cambia stato alla testata e impegna il vino solo quando acquisisce l'esito dalla coda esiti.",
+            "mods": [
+              {
+                "id": "bc.op",
+                "t": "Operazione certificazione",
+                "s": "stato testata, impegno vino"
+              },
+              {
+                "id": "bc.log",
+                "t": "Log integrazione",
+                "s": "SEND, OK, ERROR con RequestId"
+              },
+              {
+                "id": "bc.pub",
+                "t": "Publisher",
+                "s": "comando su coda, REST HTTPS"
+              },
+              {
+                "id": "bc.job",
+                "t": "Job Queue esiti",
+                "s": "legge la coda esiti"
+              },
+              {
+                "id": "bc.guard",
+                "t": "Guardrail",
+                "s": "SEND senza esito oltre soglia"
+              }
+            ]
+          },
+          {
+            "id": "sb",
+            "n": "Azure Service Bus",
+            "s": [
+              "messaggi persistenti"
+            ],
+            "icon": "sb",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 340,
+            "y": 260,
+            "h": 210,
+            "desc": "Disaccoppia i tempi di risposta di BC dai tempi di elaborazione di Dataverse: il comando resta in coda anche se CE è lento o indisponibile. Retry controllati e dead-letter per gli errori permanenti.",
+            "mods": [
+              {
+                "id": "sb.cmd",
+                "t": "Coda comandi",
+                "s": "impegno vino, peek-lock"
+              },
+              {
+                "id": "sb.res",
+                "t": "Coda esiti",
+                "s": "esito per RequestId"
+              },
+              {
+                "id": "sb.dlq",
+                "t": "Dead-letter queue",
+                "s": "errori permanenti"
+              }
+            ]
+          },
+          {
+            "id": "fn",
+            "n": "Azure Function worker",
+            "s": [
+              "logica di impegno vino"
+            ],
+            "icon": "func",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 620,
+            "y": 260,
+            "h": 306,
+            "desc": "Sostituisce la CWA BC_UpdateWineVasesBottleV2: consuma il comando, applica la logica su Dataverse in modo idempotente e pubblica l'esito. Essendo un client esterno può usare operazioni bulk quando vantaggiose.",
+            "mods": [
+              {
+                "id": "fn.idem",
+                "t": "Idempotenza",
+                "s": "RequestId già visto o in corso"
+              },
+              {
+                "id": "fn.look",
+                "t": "Ricerca e lookup",
+                "s": "percorso, 8 lookup, proprietari"
+              },
+              {
+                "id": "fn.upd",
+                "t": "Update percorso",
+                "s": "quantità e stato del vino"
+              },
+              {
+                "id": "fn.rows",
+                "t": "Creazione righe",
+                "s": "bottiglie, recipienti, proprietà"
+              },
+              {
+                "id": "fn.out",
+                "t": "Esito",
+                "s": "stato richiesta, coda esiti"
+              }
+            ]
+          },
+          {
+            "id": "ce",
+            "n": "Dataverse (CE)",
+            "s": [
+              "percorsi di certificazione"
+            ],
+            "mono": "CE",
+            "band": "Customer Engagement · Dataverse",
+            "x": 1180,
+            "y": 260,
+            "h": 258,
+            "desc": "Contiene il percorso di certificazione e le righe collegate. Non riceve più la chiamata sincrona da BC: viene aggiornato dal worker tramite Web API.",
+            "mods": [
+              {
+                "id": "ce.req",
+                "t": "Registro richieste",
+                "s": "Event Log, RequestId, stato"
+              },
+              {
+                "id": "ce.path",
+                "t": "Percorso certificazione",
+                "s": "vlr_certificationpath"
+              },
+              {
+                "id": "ce.rows",
+                "t": "Righe collegate",
+                "s": "bottles, winevessel, ownership"
+              },
+              {
+                "id": "ce.wf",
+                "t": "Workflow ricalcolo",
+                "s": "proprietà, in background"
+              }
+            ]
+          },
+          {
+            "id": "kv",
+            "n": "Azure Key Vault",
+            "s": [
+              "segreti dell'integrazione",
+              "letto con identità gestita"
+            ],
+            "icon": "kv",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 340,
+            "y": 620,
+            "desc": "Credenziali dell'application user Dataverse e altri segreti del worker."
+          },
+          {
+            "id": "ai",
+            "n": "Application Insights",
+            "s": [
+              "telemetria centralizzata",
+              "correlazione per RequestId"
+            ],
+            "icon": "ai",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 620,
+            "y": 620,
+            "desc": "Tracing di ricerca percorso, singole lookup, Update, cicli di Create e accodamento workflow; osservabilità end-to-end per RequestId."
+          },
+          {
+            "id": "entra",
+            "n": "Microsoft Entra ID",
+            "s": [
+              "identità utenti e applicazioni",
+              "app registration, ruoli RBAC"
+            ],
+            "icon": "entra",
+            "band": "Tenant Entra ID aziendale",
+            "x": 60,
+            "y": 660,
+            "desc": "Emette i token per BC verso Service Bus e per il worker verso Dataverse."
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "a": "user",
+            "b": "bc",
+            "d": [
+              [
+                180,
+                152
+              ],
+              [
+                180,
+                260
+              ]
+            ],
+            "l": "avvio impegno",
+            "lx": 180,
+            "ly": 206
+          },
+          {
+            "id": "e2",
+            "a": "bc",
+            "b": "sb",
+            "d": [
+              [
+                300,
+                296
+              ],
+              [
+                340,
+                296
+              ]
+            ],
+            "bi": true
+          },
+          {
+            "id": "e3",
+            "a": "sb",
+            "b": "fn",
+            "d": [
+              [
+                580,
+                296
+              ],
+              [
+                620,
+                296
+              ]
+            ],
+            "bi": true
+          },
+          {
+            "id": "e4",
+            "a": "fn",
+            "b": "ce",
+            "d": [
+              [
+                860,
+                296
+              ],
+              [
+                1180,
+                296
+              ]
+            ],
+            "l": "Web API Dataverse",
+            "lx": 1020,
+            "ly": 300
+          },
+          {
+            "id": "e5",
+            "a": "fn",
+            "b": "ai",
+            "d": [
+              [
+                740,
+                566
+              ],
+              [
+                740,
+                620
+              ]
+            ],
+            "l": "telemetria",
+            "lx": 740,
+            "ly": 596
+          },
+          {
+            "id": "e6",
+            "a": "fn",
+            "b": "kv",
+            "d": [
+              [
+                620,
+                520
+              ],
+              [
+                460,
+                520
+              ],
+              [
+                460,
+                620
+              ]
+            ],
+            "l": "segreti",
+            "lx": 460,
+            "ly": 570
+          },
+          {
+            "id": "e7",
+            "a": "bc",
+            "b": "entra",
+            "d": [
+              [
+                180,
+                566
+              ],
+              [
+                180,
+                660
+              ]
+            ],
+            "l": "token OAuth",
+            "lx": 180,
+            "ly": 612
+          }
+        ],
+        "flows": [
+          {
+            "id": "f1",
+            "g": "Percorso di un impegno vino",
+            "t": "Avvio e pubblicazione del comando",
+            "w": "Business Central, publisher",
+            "note": "BC genera un RequestId univoco, registra SEND e pubblica il comando con gli stessi input di oggi (campi di testata, BC Bottles Json, BC Owner Composition Json). L'operazione passa a Inviato e l'utente non resta in attesa di CE.",
+            "h": [
+              [
+                "user",
+                "bc",
+                "e1",
+                1,
+                "Pulsante sulla testata dell'operazione",
+                [
+                  "bc.op"
+                ]
+              ],
+              [
+                "bc",
+                "entra",
+                "e7",
+                1,
+                "Richiesta del token per Service Bus",
+                [
+                  "bc.pub"
+                ]
+              ],
+              [
+                "bc",
+                "sb",
+                "e2",
+                1,
+                "Log SEND e comando con RequestId sulla coda",
+                [
+                  "bc.log",
+                  "bc.pub",
+                  "sb.cmd"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f2",
+            "g": "Percorso di un impegno vino",
+            "t": "Presa in carico e controllo di idempotenza",
+            "w": "Azure Function worker",
+            "note": "Il worker registra la ricezione con payload e RequestId (stato Accettato da CE, poi In elaborazione CE). Se il RequestId risulta già completato restituisce l'esito noto senza ricreare le righe.",
+            "h": [
+              [
+                "sb",
+                "fn",
+                "e3",
+                1,
+                "Consegna del comando in peek-lock",
+                [
+                  "sb.cmd",
+                  "fn.idem"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Verifica del RequestId e registrazione della ricezione",
+                [
+                  "fn.idem",
+                  "ce.req"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f3",
+            "g": "Percorso di un impegno vino",
+            "t": "Ricerca del percorso e lookup",
+            "w": "Azure Function worker",
+            "note": "Atteso esattamente un percorso attivo per codice operazione BC: zero, più risultati o un percorso inattivo sono errori applicativi definitivi. Le lookup sono denominazione, tipologia, gusto, categoria, colore, qualificazione, annata e proprietario vino.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Ricerca del percorso per vlr_bcoperationcode, con join su account",
+                [
+                  "fn.look",
+                  "ce.path"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Otto lookup di testata e account dei proprietari",
+                [
+                  "fn.look"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f4",
+            "g": "Percorso di un impegno vino",
+            "t": "Aggiornamento del percorso e creazione delle righe",
+            "w": "Azure Function worker",
+            "note": "Le righe sono scritte con chiavi alternative (Upsert) così un nuovo tentativo non le duplica. Il workflow di ricalcolo resta in background: crea un System Job e non viene atteso.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Update della testata con quantità impegnate e stato del vino",
+                [
+                  "fn.upd",
+                  "ce.path"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Upsert di bottiglie, recipienti e composizioni proprietarie",
+                [
+                  "fn.rows",
+                  "ce.rows"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Accodamento del workflow di ricalcolo proprietà",
+                [
+                  "fn.rows",
+                  "ce.wf"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f5",
+            "g": "Percorso di un impegno vino",
+            "t": "Pubblicazione dell'esito",
+            "w": "Azure Function worker",
+            "note": "L'esito porta RequestId, percorso CE, Is Inspective Path, OutStatus e messaggio. Viene conservato in CE oltre che pubblicato, così resta disponibile anche se BC lo legge in ritardo.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Richiesta in stato Completato CE",
+                [
+                  "fn.out",
+                  "ce.req"
+                ]
+              ],
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Esito con RequestId sulla coda esiti",
+                [
+                  "fn.out",
+                  "sb.res"
+                ]
+              ],
+              [
+                "fn",
+                "ai",
+                "e5",
+                1,
+                "Telemetria dell'elaborazione",
+                [
+                  "fn.out"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f6",
+            "g": "Percorso di un impegno vino",
+            "t": "Acquisizione dell'esito e impegno del vino",
+            "w": "Business Central, Job Queue",
+            "note": "Solo all'acquisizione dell'esito positivo BC registra OK, cambia stato alla testata (Confermato a BC) e impegna il vino. L'esito è abbinato al SEND tramite RequestId.",
+            "h": [
+              [
+                "sb",
+                "bc",
+                "e2",
+                -1,
+                "La Job Queue legge l'esito dalla coda",
+                [
+                  "sb.res",
+                  "bc.job"
+                ]
+              ],
+              [
+                "bc",
+                "user",
+                "e1",
+                -1,
+                "Log OK, cambio stato e vino impegnato",
+                [
+                  "bc.log",
+                  "bc.op"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f7",
+            "g": "Gestione degli errori",
+            "t": "Errore temporaneo e nuovo tentativo",
+            "w": "Service Bus, Azure Function worker",
+            "note": "Rallentamenti o indisponibilità di Dataverse non fanno perdere il comando: il lock scade o il messaggio viene abbandonato e Service Bus lo riconsegna. L'idempotenza rende sicuro il nuovo tentativo. Stato: Errore ritentabile.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Timeout o errore transitorio di Dataverse",
+                [
+                  "fn.look",
+                  "fn.upd",
+                  "fn.rows"
+                ]
+              ],
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Messaggio abbandonato, torna in coda",
+                [
+                  "sb.cmd"
+                ]
+              ],
+              [
+                "sb",
+                "fn",
+                "e3",
+                1,
+                "Riconsegna del comando",
+                [
+                  "sb.cmd",
+                  "fn.idem"
+                ]
+              ],
+              [
+                "fn",
+                "ai",
+                "e5",
+                1,
+                "Tracciamento del tentativo fallito"
+              ]
+            ]
+          },
+          {
+            "id": "f8",
+            "g": "Gestione degli errori",
+            "t": "Errore definitivo e dead-letter",
+            "w": "Service Bus, Azure Function worker",
+            "note": "Errori applicativi (percorso non trovato o inattivo, lookup non risolta) o tentativi esauriti: il messaggio va in dead-letter e BC riceve un esito negativo. BC registra ERROR e non impegna il vino. Stato: Errore definitivo.",
+            "h": [
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Comando spostato in dead-letter",
+                [
+                  "sb.dlq"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Richiesta in stato Errore definitivo",
+                [
+                  "fn.out",
+                  "ce.req"
+                ]
+              ],
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Esito negativo sulla coda esiti",
+                [
+                  "fn.out",
+                  "sb.res"
+                ]
+              ],
+              [
+                "sb",
+                "bc",
+                "e2",
+                -1,
+                "BC registra ERROR con il messaggio",
+                [
+                  "sb.res",
+                  "bc.job",
+                  "bc.log"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f9",
+            "g": "Controllo operativo",
+            "t": "Guardrail SEND senza esito",
+            "w": "Business Central, guardrail",
+            "note": "Vista delle operazioni con SEND e senza OK né ERROR oltre una soglia configurabile, con alert periodico: i casi emergono prima della fase di certificazione. Stato: Da riconciliare. Nessun retry automatico.",
+            "h": [
+              [
+                "bc",
+                "user",
+                "e1",
+                -1,
+                "Alert delle operazioni da riconciliare",
+                [
+                  "bc.guard",
+                  "bc.log"
+                ]
+              ]
+            ]
+          }
+        ],
+        "technologies": [
+          {
+            "id": "sb",
+            "g": "Microsoft Azure",
+            "n": "Azure Service Bus",
+            "icon": "sb",
+            "e": [
+              "sb"
+            ],
+            "d": "Coda comandi e coda esiti, con retry controllati e dead-letter queue."
+          },
+          {
+            "id": "func",
+            "g": "Microsoft Azure",
+            "n": "Azure Functions",
+            "icon": "func",
+            "e": [
+              "fn"
+            ],
+            "d": "Worker con trigger Service Bus che ospita la logica di impegno vino convertita dalla CWA; consumer scalabile."
+          },
+          {
+            "id": "ai",
+            "g": "Microsoft Azure",
+            "n": "Application Insights",
+            "icon": "ai",
+            "e": [
+              "ai",
+              "fn"
+            ],
+            "d": "Telemetria centralizzata e tracciamento end-to-end per RequestId."
+          },
+          {
+            "id": "kv",
+            "g": "Microsoft Azure",
+            "n": "Azure Key Vault",
+            "icon": "kv",
+            "e": [
+              "kv",
+              "fn"
+            ],
+            "d": "Segreti del worker, letti con identità gestita."
+          },
+          {
+            "id": "bc",
+            "g": "Microsoft Dynamics ed Entra",
+            "n": "Dynamics 365 Business Central",
+            "icon": "bc",
+            "e": [
+              "bc",
+              "user"
+            ],
+            "d": "Esteso con RequestId, publisher verso Service Bus, Job Queue per l'esito differito e vista guardrail."
+          },
+          {
+            "id": "ce",
+            "g": "Microsoft Dynamics ed Entra",
+            "n": "Dataverse / Customer Engagement",
+            "mono": "CE",
+            "e": [
+              "ce"
+            ],
+            "d": "Percorso di certificazione e righe collegate; chiavi alternative su bottiglie, recipienti e proprietà; registro richieste con stato."
+          },
+          {
+            "id": "entra",
+            "g": "Microsoft Dynamics ed Entra",
+            "n": "Microsoft Entra ID",
+            "icon": "entra",
+            "e": [
+              "entra",
+              "bc",
+              "fn"
+            ],
+            "d": "App registration per BC e per l'application user Dataverse, ruoli RBAC su Service Bus."
+          },
+          {
+            "id": "oauth",
+            "g": "Protocolli e pattern",
+            "n": "OAuth 2.0 client credentials",
+            "mono": "JWT",
+            "e": [
+              "bc",
+              "fn",
+              "entra"
+            ],
+            "d": "Token applicativi per BC verso Service Bus e per il worker verso Dataverse."
+          },
+          {
+            "id": "idem",
+            "g": "Protocolli e pattern",
+            "n": "Idempotenza per RequestId",
+            "mono": "ID",
+            "e": [
+              "bc",
+              "fn",
+              "ce"
+            ],
+            "d": "Ogni invio ha un identificativo univoco conservato in entrambi i sistemi: distingue invii, retry e payload diversi sullo stesso codice operazione."
+          },
+          {
+            "id": "webapi",
+            "g": "Protocolli e pattern",
+            "n": "Dataverse Web API",
+            "mono": "API",
+            "e": [
+              "fn",
+              "ce"
+            ],
+            "d": "Letture, Update, Upsert e avvio del workflow dal worker esterno; operazioni bulk dove vantaggiose."
+          }
+        ],
+        "authKinds": {
+          "mi": "Identità gestita",
+          "tok": "Token OAuth / OIDC",
+          "sec": "Segreto conservato",
+          "per": "Identità persona"
+        },
+        "auth": [
+          [
+            1,
+            "per",
+            "user",
+            [
+              "bc"
+            ],
+            "Utente Entra ID con licenza e permessi Business Central",
+            "identità della persona"
+          ],
+          [
+            2,
+            "tok",
+            "bc",
+            [
+              "sb"
+            ],
+            "OAuth 2.0 client credentials, ruoli Azure Service Bus Data Sender (coda comandi) e Data Receiver (coda esiti)",
+            "client secret in Isolated Storage di Business Central"
+          ],
+          [
+            3,
+            "mi",
+            "fn",
+            [
+              "sb"
+            ],
+            "Identità gestita + ruoli Data Receiver (coda comandi) e Data Sender (coda esiti)",
+            "nessuna da conservare"
+          ],
+          [
+            4,
+            "tok",
+            "fn",
+            [
+              "ce"
+            ],
+            "Application user Dataverse con security role dedicato, token Entra ID",
+            "client secret o certificato in Key Vault"
+          ],
+          [
+            5,
+            "mi",
+            "fn",
+            [
+              "kv",
+              "ai"
+            ],
+            "Identità gestita assegnata dal sistema + ruoli RBAC",
+            "nessuna da conservare"
+          ],
+          [
+            6,
+            "per",
+            "Amministratori",
+            [
+              "entra"
+            ],
+            "Utenti Entra ID, MFA obbligatoria",
+            "identità della persona"
+          ]
+        ]
+      },
+      "descrizione": "Diagramma importato",
+      "origine": "manuale",
+      "autore": "Utente",
+      "data": "2026-10-02T07:53:46.722Z"
+    },
+    {
+      "numero": 1,
+      "diagramma": {
+        "bands": [
+          {
+            "l": "UTENTI",
+            "x": 40,
+            "y": 40,
+            "w": 270,
+            "h": 140
+          },
+          {
+            "l": "BUSINESS CENTRAL · SAAS",
+            "x": 40,
+            "y": 210,
+            "w": 270,
+            "h": 380
+          },
+          {
+            "l": "SOTTOSCRIZIONE AZURE INTEGRAZIONE",
+            "x": 320,
+            "y": 210,
+            "w": 560,
+            "h": 510
+          },
+          {
+            "l": "CUSTOMER ENGAGEMENT · DATAVERSE",
+            "x": 1160,
+            "y": 210,
+            "w": 280,
+            "h": 380
+          },
+          {
+            "l": "TENANT ENTRA ID AZIENDALE",
+            "x": 40,
+            "y": 620,
+            "w": 270,
+            "h": 140
+          }
+        ],
+        "entities": [
+          {
+            "id": "user",
+            "n": "Operatore BC",
+            "s": [
+              "avvia l'impegno vino"
+            ],
+            "mono": "USR",
+            "band": "Utenti",
+            "x": 60,
+            "y": 80,
+            "desc": "L'utente preme il pulsante sulla testata dell'operazione di certificazione vino. Non attende più l'elaborazione di CE: vede l'operazione in stato Inviato e poi l'esito.",
+            "icon": "logos:customerio-icon"
+          },
+          {
+            "id": "bc",
+            "n": "Business Central",
+            "s": [
+              "origine del comando di impegno"
+            ],
+            "icon": "bc",
+            "band": "Business Central · SaaS",
+            "x": 60,
+            "y": 260,
+            "h": 306,
+            "desc": "Genera il RequestId, registra SEND e pubblica il comando su Service Bus. Cambia stato alla testata e impegna il vino solo quando acquisisce l'esito dalla coda esiti.",
+            "mods": [
+              {
+                "id": "bc.op",
+                "t": "Operazione certificazione",
+                "s": "stato testata, impegno vino"
+              },
+              {
+                "id": "bc.log",
+                "t": "Log integrazione",
+                "s": "SEND, OK, ERROR con RequestId"
+              },
+              {
+                "id": "bc.pub",
+                "t": "Publisher",
+                "s": "comando su coda, REST HTTPS"
+              },
+              {
+                "id": "bc.job",
+                "t": "Job Queue esiti",
+                "s": "legge la coda esiti"
+              },
+              {
+                "id": "bc.guard",
+                "t": "Guardrail",
+                "s": "SEND senza esito oltre soglia"
+              }
+            ]
+          },
+          {
+            "id": "sb",
+            "n": "Azure Service Bus",
+            "s": [
+              "messaggi persistenti"
+            ],
+            "icon": "sb",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 340,
+            "y": 260,
+            "h": 210,
+            "desc": "Disaccoppia i tempi di risposta di BC dai tempi di elaborazione di Dataverse: il comando resta in coda anche se CE è lento o indisponibile. Retry controllati e dead-letter per gli errori permanenti.",
+            "mods": [
+              {
+                "id": "sb.cmd",
+                "t": "Coda comandi",
+                "s": "impegno vino, peek-lock"
+              },
+              {
+                "id": "sb.res",
+                "t": "Coda esiti",
+                "s": "esito per RequestId"
+              },
+              {
+                "id": "sb.dlq",
+                "t": "Dead-letter queue",
+                "s": "errori permanenti"
+              }
+            ]
+          },
+          {
+            "id": "fn",
+            "n": "Azure Function worker",
+            "s": [
+              "logica di impegno vino"
+            ],
+            "icon": "func",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 620,
+            "y": 260,
+            "h": 306,
+            "desc": "Sostituisce la CWA BC_UpdateWineVasesBottleV2: consuma il comando, applica la logica su Dataverse in modo idempotente e pubblica l'esito. Essendo un client esterno può usare operazioni bulk quando vantaggiose.",
+            "mods": [
+              {
+                "id": "fn.idem",
+                "t": "Idempotenza",
+                "s": "RequestId già visto o in corso"
+              },
+              {
+                "id": "fn.look",
+                "t": "Ricerca e lookup",
+                "s": "percorso, 8 lookup, proprietari"
+              },
+              {
+                "id": "fn.upd",
+                "t": "Update percorso",
+                "s": "quantità e stato del vino"
+              },
+              {
+                "id": "fn.rows",
+                "t": "Creazione righe",
+                "s": "bottiglie, recipienti, proprietà"
+              },
+              {
+                "id": "fn.out",
+                "t": "Esito",
+                "s": "stato richiesta, coda esiti"
+              }
+            ]
+          },
+          {
+            "id": "ce",
+            "n": "Dataverse (CE)",
+            "s": [
+              "percorsi di certificazione"
+            ],
+            "mono": "CE",
+            "band": "Customer Engagement · Dataverse",
+            "x": 1180,
+            "y": 260,
+            "h": 258,
+            "desc": "Contiene il percorso di certificazione e le righe collegate. Non riceve più la chiamata sincrona da BC: viene aggiornato dal worker tramite Web API.",
+            "mods": [
+              {
+                "id": "ce.req",
+                "t": "Registro richieste",
+                "s": "Event Log, RequestId, stato"
+              },
+              {
+                "id": "ce.path",
+                "t": "Percorso certificazione",
+                "s": "vlr_certificationpath"
+              },
+              {
+                "id": "ce.rows",
+                "t": "Righe collegate",
+                "s": "bottles, winevessel, ownership"
+              },
+              {
+                "id": "ce.wf",
+                "t": "Workflow ricalcolo",
+                "s": "proprietà, in background"
+              }
+            ]
+          },
+          {
+            "id": "kv",
+            "n": "Azure Key Vault",
+            "s": [
+              "segreti dell'integrazione",
+              "letto con identità gestita"
+            ],
+            "icon": "kv",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 340,
+            "y": 620,
+            "desc": "Credenziali dell'application user Dataverse e altri segreti del worker."
+          },
+          {
+            "id": "ai",
+            "n": "Application Insights",
+            "s": [
+              "telemetria centralizzata",
+              "correlazione per RequestId"
+            ],
+            "icon": "ai",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 620,
+            "y": 620,
+            "desc": "Tracing di ricerca percorso, singole lookup, Update, cicli di Create e accodamento workflow; osservabilità end-to-end per RequestId."
+          },
+          {
+            "id": "entra",
+            "n": "Microsoft Entra ID",
+            "s": [
+              "identità utenti e applicazioni",
+              "app registration, ruoli RBAC"
+            ],
+            "icon": "entra",
+            "band": "Tenant Entra ID aziendale",
+            "x": 60,
+            "y": 660,
+            "desc": "Emette i token per BC verso Service Bus e per il worker verso Dataverse."
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "a": "user",
+            "b": "bc",
+            "d": [
+              [
+                180,
+                152
+              ],
+              [
+                180,
+                260
+              ]
+            ],
+            "l": "avvio impegno",
+            "lx": 180,
+            "ly": 206
+          },
+          {
+            "id": "e2",
+            "a": "bc",
+            "b": "sb",
+            "d": [
+              [
+                300,
+                296
+              ],
+              [
+                340,
+                296
+              ]
+            ],
+            "bi": true
+          },
+          {
+            "id": "e3",
+            "a": "sb",
+            "b": "fn",
+            "d": [
+              [
+                580,
+                296
+              ],
+              [
+                620,
+                296
+              ]
+            ],
+            "bi": true
+          },
+          {
+            "id": "e4",
+            "a": "fn",
+            "b": "ce",
+            "d": [
+              [
+                860,
+                296
+              ],
+              [
+                1180,
+                296
+              ]
+            ],
+            "l": "Web API Dataverse",
+            "lx": 1020,
+            "ly": 300
+          },
+          {
+            "id": "e5",
+            "a": "fn",
+            "b": "ai",
+            "d": [
+              [
+                740,
+                566
+              ],
+              [
+                740,
+                620
+              ]
+            ],
+            "l": "telemetria",
+            "lx": 740,
+            "ly": 596
+          },
+          {
+            "id": "e6",
+            "a": "fn",
+            "b": "kv",
+            "d": [
+              [
+                620,
+                520
+              ],
+              [
+                460,
+                520
+              ],
+              [
+                460,
+                620
+              ]
+            ],
+            "l": "segreti",
+            "lx": 460,
+            "ly": 570
+          },
+          {
+            "id": "e7",
+            "a": "bc",
+            "b": "entra",
+            "d": [
+              [
+                180,
+                566
+              ],
+              [
+                180,
+                660
+              ]
+            ],
+            "l": "token OAuth",
+            "lx": 180,
+            "ly": 612
+          }
+        ],
+        "flows": [
+          {
+            "id": "f1",
+            "g": "Percorso di un impegno vino",
+            "t": "Avvio e pubblicazione del comando",
+            "w": "Business Central, publisher",
+            "note": "BC genera un RequestId univoco, registra SEND e pubblica il comando con gli stessi input di oggi (campi di testata, BC Bottles Json, BC Owner Composition Json). L'operazione passa a Inviato e l'utente non resta in attesa di CE.",
+            "h": [
+              [
+                "user",
+                "bc",
+                "e1",
+                1,
+                "Pulsante sulla testata dell'operazione",
+                [
+                  "bc.op"
+                ]
+              ],
+              [
+                "bc",
+                "entra",
+                "e7",
+                1,
+                "Richiesta del token per Service Bus",
+                [
+                  "bc.pub"
+                ]
+              ],
+              [
+                "bc",
+                "sb",
+                "e2",
+                1,
+                "Log SEND e comando con RequestId sulla coda",
+                [
+                  "bc.log",
+                  "bc.pub",
+                  "sb.cmd"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f2",
+            "g": "Percorso di un impegno vino",
+            "t": "Presa in carico e controllo di idempotenza",
+            "w": "Azure Function worker",
+            "note": "Il worker registra la ricezione con payload e RequestId (stato Accettato da CE, poi In elaborazione CE). Se il RequestId risulta già completato restituisce l'esito noto senza ricreare le righe.",
+            "h": [
+              [
+                "sb",
+                "fn",
+                "e3",
+                1,
+                "Consegna del comando in peek-lock",
+                [
+                  "sb.cmd",
+                  "fn.idem"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Verifica del RequestId e registrazione della ricezione",
+                [
+                  "fn.idem",
+                  "ce.req"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f3",
+            "g": "Percorso di un impegno vino",
+            "t": "Ricerca del percorso e lookup",
+            "w": "Azure Function worker",
+            "note": "Atteso esattamente un percorso attivo per codice operazione BC: zero, più risultati o un percorso inattivo sono errori applicativi definitivi. Le lookup sono denominazione, tipologia, gusto, categoria, colore, qualificazione, annata e proprietario vino.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Ricerca del percorso per vlr_bcoperationcode, con join su account",
+                [
+                  "fn.look",
+                  "ce.path"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Otto lookup di testata e account dei proprietari",
+                [
+                  "fn.look"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f4",
+            "g": "Percorso di un impegno vino",
+            "t": "Aggiornamento del percorso e creazione delle righe",
+            "w": "Azure Function worker",
+            "note": "Le righe sono scritte con chiavi alternative (Upsert) così un nuovo tentativo non le duplica. Il workflow di ricalcolo resta in background: crea un System Job e non viene atteso.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Update della testata con quantità impegnate e stato del vino",
+                [
+                  "fn.upd",
+                  "ce.path"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Upsert di bottiglie, recipienti e composizioni proprietarie",
+                [
+                  "fn.rows",
+                  "ce.rows"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Accodamento del workflow di ricalcolo proprietà",
+                [
+                  "fn.rows",
+                  "ce.wf"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f5",
+            "g": "Percorso di un impegno vino",
+            "t": "Pubblicazione dell'esito",
+            "w": "Azure Function worker",
+            "note": "L'esito porta RequestId, percorso CE, Is Inspective Path, OutStatus e messaggio. Viene conservato in CE oltre che pubblicato, così resta disponibile anche se BC lo legge in ritardo.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Richiesta in stato Completato CE",
+                [
+                  "fn.out",
+                  "ce.req"
+                ]
+              ],
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Esito con RequestId sulla coda esiti",
+                [
+                  "fn.out",
+                  "sb.res"
+                ]
+              ],
+              [
+                "fn",
+                "ai",
+                "e5",
+                1,
+                "Telemetria dell'elaborazione",
+                [
+                  "fn.out"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f6",
+            "g": "Percorso di un impegno vino",
+            "t": "Acquisizione dell'esito e impegno del vino",
+            "w": "Business Central, Job Queue",
+            "note": "Solo all'acquisizione dell'esito positivo BC registra OK, cambia stato alla testata (Confermato a BC) e impegna il vino. L'esito è abbinato al SEND tramite RequestId.",
+            "h": [
+              [
+                "sb",
+                "bc",
+                "e2",
+                -1,
+                "La Job Queue legge l'esito dalla coda",
+                [
+                  "sb.res",
+                  "bc.job"
+                ]
+              ],
+              [
+                "bc",
+                "user",
+                "e1",
+                -1,
+                "Log OK, cambio stato e vino impegnato",
+                [
+                  "bc.log",
+                  "bc.op"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f7",
+            "g": "Gestione degli errori",
+            "t": "Errore temporaneo e nuovo tentativo",
+            "w": "Service Bus, Azure Function worker",
+            "note": "Rallentamenti o indisponibilità di Dataverse non fanno perdere il comando: il lock scade o il messaggio viene abbandonato e Service Bus lo riconsegna. L'idempotenza rende sicuro il nuovo tentativo. Stato: Errore ritentabile.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Timeout o errore transitorio di Dataverse",
+                [
+                  "fn.look",
+                  "fn.upd",
+                  "fn.rows"
+                ]
+              ],
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Messaggio abbandonato, torna in coda",
+                [
+                  "sb.cmd"
+                ]
+              ],
+              [
+                "sb",
+                "fn",
+                "e3",
+                1,
+                "Riconsegna del comando",
+                [
+                  "sb.cmd",
+                  "fn.idem"
+                ]
+              ],
+              [
+                "fn",
+                "ai",
+                "e5",
+                1,
+                "Tracciamento del tentativo fallito"
+              ]
+            ]
+          },
+          {
+            "id": "f8",
+            "g": "Gestione degli errori",
+            "t": "Errore definitivo e dead-letter",
+            "w": "Service Bus, Azure Function worker",
+            "note": "Errori applicativi (percorso non trovato o inattivo, lookup non risolta) o tentativi esauriti: il messaggio va in dead-letter e BC riceve un esito negativo. BC registra ERROR e non impegna il vino. Stato: Errore definitivo.",
+            "h": [
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Comando spostato in dead-letter",
+                [
+                  "sb.dlq"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Richiesta in stato Errore definitivo",
+                [
+                  "fn.out",
+                  "ce.req"
+                ]
+              ],
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Esito negativo sulla coda esiti",
+                [
+                  "fn.out",
+                  "sb.res"
+                ]
+              ],
+              [
+                "sb",
+                "bc",
+                "e2",
+                -1,
+                "BC registra ERROR con il messaggio",
+                [
+                  "sb.res",
+                  "bc.job",
+                  "bc.log"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f9",
+            "g": "Controllo operativo",
+            "t": "Guardrail SEND senza esito",
+            "w": "Business Central, guardrail",
+            "note": "Vista delle operazioni con SEND e senza OK né ERROR oltre una soglia configurabile, con alert periodico: i casi emergono prima della fase di certificazione. Stato: Da riconciliare. Nessun retry automatico.",
+            "h": [
+              [
+                "bc",
+                "user",
+                "e1",
+                -1,
+                "Alert delle operazioni da riconciliare",
+                [
+                  "bc.guard",
+                  "bc.log"
+                ]
+              ]
+            ]
+          }
+        ],
+        "technologies": [
+          {
+            "id": "sb",
+            "g": "Microsoft Azure",
+            "n": "Azure Service Bus",
+            "icon": "sb",
+            "e": [
+              "sb"
+            ],
+            "d": "Coda comandi e coda esiti, con retry controllati e dead-letter queue."
+          },
+          {
+            "id": "func",
+            "g": "Microsoft Azure",
+            "n": "Azure Functions",
+            "icon": "func",
+            "e": [
+              "fn"
+            ],
+            "d": "Worker con trigger Service Bus che ospita la logica di impegno vino convertita dalla CWA; consumer scalabile."
+          },
+          {
+            "id": "ai",
+            "g": "Microsoft Azure",
+            "n": "Application Insights",
+            "icon": "ai",
+            "e": [
+              "ai",
+              "fn"
+            ],
+            "d": "Telemetria centralizzata e tracciamento end-to-end per RequestId."
+          },
+          {
+            "id": "kv",
+            "g": "Microsoft Azure",
+            "n": "Azure Key Vault",
+            "icon": "kv",
+            "e": [
+              "kv",
+              "fn"
+            ],
+            "d": "Segreti del worker, letti con identità gestita."
+          },
+          {
+            "id": "bc",
+            "g": "Microsoft Dynamics ed Entra",
+            "n": "Dynamics 365 Business Central",
+            "icon": "bc",
+            "e": [
+              "bc",
+              "user"
+            ],
+            "d": "Esteso con RequestId, publisher verso Service Bus, Job Queue per l'esito differito e vista guardrail."
+          },
+          {
+            "id": "ce",
+            "g": "Microsoft Dynamics ed Entra",
+            "n": "Dataverse / Customer Engagement",
+            "mono": "CE",
+            "e": [
+              "ce"
+            ],
+            "d": "Percorso di certificazione e righe collegate; chiavi alternative su bottiglie, recipienti e proprietà; registro richieste con stato."
+          },
+          {
+            "id": "entra",
+            "g": "Microsoft Dynamics ed Entra",
+            "n": "Microsoft Entra ID",
+            "icon": "entra",
+            "e": [
+              "entra",
+              "bc",
+              "fn"
+            ],
+            "d": "App registration per BC e per l'application user Dataverse, ruoli RBAC su Service Bus."
+          },
+          {
+            "id": "oauth",
+            "g": "Protocolli e pattern",
+            "n": "OAuth 2.0 client credentials",
+            "mono": "JWT",
+            "e": [
+              "bc",
+              "fn",
+              "entra"
+            ],
+            "d": "Token applicativi per BC verso Service Bus e per il worker verso Dataverse."
+          },
+          {
+            "id": "idem",
+            "g": "Protocolli e pattern",
+            "n": "Idempotenza per RequestId",
+            "mono": "ID",
+            "e": [
+              "bc",
+              "fn",
+              "ce"
+            ],
+            "d": "Ogni invio ha un identificativo univoco conservato in entrambi i sistemi: distingue invii, retry e payload diversi sullo stesso codice operazione."
+          },
+          {
+            "id": "webapi",
+            "g": "Protocolli e pattern",
+            "n": "Dataverse Web API",
+            "mono": "API",
+            "e": [
+              "fn",
+              "ce"
+            ],
+            "d": "Letture, Update, Upsert e avvio del workflow dal worker esterno; operazioni bulk dove vantaggiose."
+          }
+        ],
+        "authKinds": {
+          "mi": "Identità gestita",
+          "tok": "Token OAuth / OIDC",
+          "sec": "Segreto conservato",
+          "per": "Identità persona"
+        },
+        "auth": [
+          [
+            1,
+            "per",
+            "user",
+            [
+              "bc"
+            ],
+            "Utente Entra ID con licenza e permessi Business Central",
+            "identità della persona"
+          ],
+          [
+            2,
+            "tok",
+            "bc",
+            [
+              "sb"
+            ],
+            "OAuth 2.0 client credentials, ruoli Azure Service Bus Data Sender (coda comandi) e Data Receiver (coda esiti)",
+            "client secret in Isolated Storage di Business Central"
+          ],
+          [
+            3,
+            "mi",
+            "fn",
+            [
+              "sb"
+            ],
+            "Identità gestita + ruoli Data Receiver (coda comandi) e Data Sender (coda esiti)",
+            "nessuna da conservare"
+          ],
+          [
+            4,
+            "tok",
+            "fn",
+            [
+              "ce"
+            ],
+            "Application user Dataverse con security role dedicato, token Entra ID",
+            "client secret o certificato in Key Vault"
+          ],
+          [
+            5,
+            "mi",
+            "fn",
+            [
+              "kv",
+              "ai"
+            ],
+            "Identità gestita assegnata dal sistema + ruoli RBAC",
+            "nessuna da conservare"
+          ],
+          [
+            6,
+            "per",
+            "Amministratori",
+            [
+              "entra"
+            ],
+            "Utenti Entra ID, MFA obbligatoria",
+            "identità della persona"
+          ]
+        ]
+      },
+      "descrizione": "Modifica entità \"user\"",
+      "origine": "manuale",
+      "autore": "Utente",
+      "data": "2026-10-02T09:36:05.092Z"
+    },
+    {
+      "numero": 2,
+      "diagramma": {
+        "bands": [
+          {
+            "l": "UTENTI",
+            "x": 40,
+            "y": 40,
+            "w": 270,
+            "h": 140
+          },
+          {
+            "l": "BUSINESS CENTRAL · SAAS",
+            "x": 40,
+            "y": 210,
+            "w": 270,
+            "h": 380
+          },
+          {
+            "l": "SOTTOSCRIZIONE AZURE INTEGRAZIONE",
+            "x": 320,
+            "y": 210,
+            "w": 560,
+            "h": 510
+          },
+          {
+            "l": "CUSTOMER ENGAGEMENT · DATAVERSE",
+            "x": 1160,
+            "y": 210,
+            "w": 280,
+            "h": 380
+          },
+          {
+            "l": "TENANT ENTRA ID AZIENDALE",
+            "x": 40,
+            "y": 620,
+            "w": 270,
+            "h": 140
+          }
+        ],
+        "entities": [
+          {
+            "id": "user",
+            "n": "Operatore BC",
+            "s": [
+              "avvia l'impegno vino"
+            ],
+            "mono": "USR",
+            "band": "Utenti",
+            "x": 60,
+            "y": 80,
+            "desc": "L'utente preme il pulsante sulla testata dell'operazione di certificazione vino. Non attende più l'elaborazione di CE: vede l'operazione in stato Inviato e poi l'esito.",
+            "icon": "logos:customerio-icon"
+          },
+          {
+            "id": "bc",
+            "n": "Business Central",
+            "s": [
+              "origine del comando di impegno"
+            ],
+            "icon": "bc",
+            "band": "Business Central · SaaS",
+            "x": 60,
+            "y": 260,
+            "h": 306,
+            "desc": "Genera il RequestId, registra SEND e pubblica il comando su Service Bus. Cambia stato alla testata e impegna il vino solo quando acquisisce l'esito dalla coda esiti.",
+            "mods": [
+              {
+                "id": "bc.op",
+                "t": "Operazione certificazione",
+                "s": "stato testata, impegno vino"
+              },
+              {
+                "id": "bc.log",
+                "t": "Log integrazione",
+                "s": "SEND, OK, ERROR con RequestId"
+              },
+              {
+                "id": "bc.pub",
+                "t": "Publisher",
+                "s": "comando su coda, REST HTTPS"
+              },
+              {
+                "id": "bc.job",
+                "t": "Job Queue esiti",
+                "s": "legge la coda esiti"
+              },
+              {
+                "id": "bc.guard",
+                "t": "Guardrail",
+                "s": "SEND senza esito oltre soglia"
+              }
+            ]
+          },
+          {
+            "id": "sb",
+            "n": "Azure Service Bus",
+            "s": [
+              "messaggi persistenti"
+            ],
+            "icon": "sb",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 340,
+            "y": 260,
+            "h": 210,
+            "desc": "Disaccoppia i tempi di risposta di BC dai tempi di elaborazione di Dataverse: il comando resta in coda anche se CE è lento o indisponibile. Retry controllati e dead-letter per gli errori permanenti.",
+            "mods": [
+              {
+                "id": "sb.cmd",
+                "t": "Coda comandi",
+                "s": "impegno vino, peek-lock"
+              },
+              {
+                "id": "sb.res",
+                "t": "Coda esiti",
+                "s": "esito per RequestId"
+              },
+              {
+                "id": "sb.dlq",
+                "t": "Dead-letter queue",
+                "s": "errori permanenti"
+              }
+            ]
+          },
+          {
+            "id": "fn",
+            "n": "Azure Function worker",
+            "s": [
+              "logica di impegno vino"
+            ],
+            "icon": "func",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 620,
+            "y": 260,
+            "h": 306,
+            "desc": "Sostituisce la CWA BC_UpdateWineVasesBottleV2: consuma il comando, applica la logica su Dataverse in modo idempotente e pubblica l'esito. Essendo un client esterno può usare operazioni bulk quando vantaggiose.",
+            "mods": [
+              {
+                "id": "fn.idem",
+                "t": "Idempotenza",
+                "s": "RequestId già visto o in corso"
+              },
+              {
+                "id": "fn.look",
+                "t": "Ricerca e lookup",
+                "s": "percorso, 8 lookup, proprietari"
+              },
+              {
+                "id": "fn.upd",
+                "t": "Update percorso",
+                "s": "quantità e stato del vino"
+              },
+              {
+                "id": "fn.rows",
+                "t": "Creazione righe",
+                "s": "bottiglie, recipienti, proprietà"
+              },
+              {
+                "id": "fn.out",
+                "t": "Esito",
+                "s": "stato richiesta, coda esiti"
+              }
+            ]
+          },
+          {
+            "id": "ce",
+            "n": "Dataverse (CE)",
+            "s": [
+              "percorsi di certificazione"
+            ],
+            "mono": "CE",
+            "band": "Customer Engagement · Dataverse",
+            "x": 1180,
+            "y": 260,
+            "h": 258,
+            "desc": "Contiene il percorso di certificazione e le righe collegate. Non riceve più la chiamata sincrona da BC: viene aggiornato dal worker tramite Web API.",
+            "mods": [
+              {
+                "id": "ce.req",
+                "t": "Registro richieste",
+                "s": "Event Log, RequestId, stato"
+              },
+              {
+                "id": "ce.path",
+                "t": "Percorso certificazione",
+                "s": "vlr_certificationpath"
+              },
+              {
+                "id": "ce.rows",
+                "t": "Righe collegate",
+                "s": "bottles, winevessel, ownership"
+              },
+              {
+                "id": "ce.wf",
+                "t": "Workflow ricalcolo",
+                "s": "proprietà, in background"
+              }
+            ],
+            "icon": "app"
+          },
+          {
+            "id": "kv",
+            "n": "Azure Key Vault",
+            "s": [
+              "segreti dell'integrazione",
+              "letto con identità gestita"
+            ],
+            "icon": "kv",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 340,
+            "y": 620,
+            "desc": "Credenziali dell'application user Dataverse e altri segreti del worker."
+          },
+          {
+            "id": "ai",
+            "n": "Application Insights",
+            "s": [
+              "telemetria centralizzata",
+              "correlazione per RequestId"
+            ],
+            "icon": "ai",
+            "band": "Sottoscrizione Azure integrazione",
+            "x": 620,
+            "y": 620,
+            "desc": "Tracing di ricerca percorso, singole lookup, Update, cicli di Create e accodamento workflow; osservabilità end-to-end per RequestId."
+          },
+          {
+            "id": "entra",
+            "n": "Microsoft Entra ID",
+            "s": [
+              "identità utenti e applicazioni",
+              "app registration, ruoli RBAC"
+            ],
+            "icon": "entra",
+            "band": "Tenant Entra ID aziendale",
+            "x": 60,
+            "y": 660,
+            "desc": "Emette i token per BC verso Service Bus e per il worker verso Dataverse."
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "a": "user",
+            "b": "bc",
+            "d": [
+              [
+                180,
+                152
+              ],
+              [
+                180,
+                260
+              ]
+            ],
+            "l": "avvio impegno",
+            "lx": 180,
+            "ly": 206
+          },
+          {
+            "id": "e2",
+            "a": "bc",
+            "b": "sb",
+            "d": [
+              [
+                300,
+                296
+              ],
+              [
+                340,
+                296
+              ]
+            ],
+            "bi": true
+          },
+          {
+            "id": "e3",
+            "a": "sb",
+            "b": "fn",
+            "d": [
+              [
+                580,
+                296
+              ],
+              [
+                620,
+                296
+              ]
+            ],
+            "bi": true
+          },
+          {
+            "id": "e4",
+            "a": "fn",
+            "b": "ce",
+            "d": [
+              [
+                860,
+                296
+              ],
+              [
+                1180,
+                296
+              ]
+            ],
+            "l": "Web API Dataverse",
+            "lx": 1020,
+            "ly": 300
+          },
+          {
+            "id": "e5",
+            "a": "fn",
+            "b": "ai",
+            "d": [
+              [
+                740,
+                566
+              ],
+              [
+                740,
+                620
+              ]
+            ],
+            "l": "telemetria",
+            "lx": 740,
+            "ly": 596
+          },
+          {
+            "id": "e6",
+            "a": "fn",
+            "b": "kv",
+            "d": [
+              [
+                620,
+                520
+              ],
+              [
+                460,
+                520
+              ],
+              [
+                460,
+                620
+              ]
+            ],
+            "l": "segreti",
+            "lx": 460,
+            "ly": 570
+          },
+          {
+            "id": "e7",
+            "a": "bc",
+            "b": "entra",
+            "d": [
+              [
+                180,
+                566
+              ],
+              [
+                180,
+                660
+              ]
+            ],
+            "l": "token OAuth",
+            "lx": 180,
+            "ly": 612
+          }
+        ],
+        "flows": [
+          {
+            "id": "f1",
+            "g": "Percorso di un impegno vino",
+            "t": "Avvio e pubblicazione del comando",
+            "w": "Business Central, publisher",
+            "note": "BC genera un RequestId univoco, registra SEND e pubblica il comando con gli stessi input di oggi (campi di testata, BC Bottles Json, BC Owner Composition Json). L'operazione passa a Inviato e l'utente non resta in attesa di CE.",
+            "h": [
+              [
+                "user",
+                "bc",
+                "e1",
+                1,
+                "Pulsante sulla testata dell'operazione",
+                [
+                  "bc.op"
+                ]
+              ],
+              [
+                "bc",
+                "entra",
+                "e7",
+                1,
+                "Richiesta del token per Service Bus",
+                [
+                  "bc.pub"
+                ]
+              ],
+              [
+                "bc",
+                "sb",
+                "e2",
+                1,
+                "Log SEND e comando con RequestId sulla coda",
+                [
+                  "bc.log",
+                  "bc.pub",
+                  "sb.cmd"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f2",
+            "g": "Percorso di un impegno vino",
+            "t": "Presa in carico e controllo di idempotenza",
+            "w": "Azure Function worker",
+            "note": "Il worker registra la ricezione con payload e RequestId (stato Accettato da CE, poi In elaborazione CE). Se il RequestId risulta già completato restituisce l'esito noto senza ricreare le righe.",
+            "h": [
+              [
+                "sb",
+                "fn",
+                "e3",
+                1,
+                "Consegna del comando in peek-lock",
+                [
+                  "sb.cmd",
+                  "fn.idem"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Verifica del RequestId e registrazione della ricezione",
+                [
+                  "fn.idem",
+                  "ce.req"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f3",
+            "g": "Percorso di un impegno vino",
+            "t": "Ricerca del percorso e lookup",
+            "w": "Azure Function worker",
+            "note": "Atteso esattamente un percorso attivo per codice operazione BC: zero, più risultati o un percorso inattivo sono errori applicativi definitivi. Le lookup sono denominazione, tipologia, gusto, categoria, colore, qualificazione, annata e proprietario vino.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Ricerca del percorso per vlr_bcoperationcode, con join su account",
+                [
+                  "fn.look",
+                  "ce.path"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Otto lookup di testata e account dei proprietari",
+                [
+                  "fn.look"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f4",
+            "g": "Percorso di un impegno vino",
+            "t": "Aggiornamento del percorso e creazione delle righe",
+            "w": "Azure Function worker",
+            "note": "Le righe sono scritte con chiavi alternative (Upsert) così un nuovo tentativo non le duplica. Il workflow di ricalcolo resta in background: crea un System Job e non viene atteso.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Update della testata con quantità impegnate e stato del vino",
+                [
+                  "fn.upd",
+                  "ce.path"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Upsert di bottiglie, recipienti e composizioni proprietarie",
+                [
+                  "fn.rows",
+                  "ce.rows"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Accodamento del workflow di ricalcolo proprietà",
+                [
+                  "fn.rows",
+                  "ce.wf"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f5",
+            "g": "Percorso di un impegno vino",
+            "t": "Pubblicazione dell'esito",
+            "w": "Azure Function worker",
+            "note": "L'esito porta RequestId, percorso CE, Is Inspective Path, OutStatus e messaggio. Viene conservato in CE oltre che pubblicato, così resta disponibile anche se BC lo legge in ritardo.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Richiesta in stato Completato CE",
+                [
+                  "fn.out",
+                  "ce.req"
+                ]
+              ],
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Esito con RequestId sulla coda esiti",
+                [
+                  "fn.out",
+                  "sb.res"
+                ]
+              ],
+              [
+                "fn",
+                "ai",
+                "e5",
+                1,
+                "Telemetria dell'elaborazione",
+                [
+                  "fn.out"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f6",
+            "g": "Percorso di un impegno vino",
+            "t": "Acquisizione dell'esito e impegno del vino",
+            "w": "Business Central, Job Queue",
+            "note": "Solo all'acquisizione dell'esito positivo BC registra OK, cambia stato alla testata (Confermato a BC) e impegna il vino. L'esito è abbinato al SEND tramite RequestId.",
+            "h": [
+              [
+                "sb",
+                "bc",
+                "e2",
+                -1,
+                "La Job Queue legge l'esito dalla coda",
+                [
+                  "sb.res",
+                  "bc.job"
+                ]
+              ],
+              [
+                "bc",
+                "user",
+                "e1",
+                -1,
+                "Log OK, cambio stato e vino impegnato",
+                [
+                  "bc.log",
+                  "bc.op"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f7",
+            "g": "Gestione degli errori",
+            "t": "Errore temporaneo e nuovo tentativo",
+            "w": "Service Bus, Azure Function worker",
+            "note": "Rallentamenti o indisponibilità di Dataverse non fanno perdere il comando: il lock scade o il messaggio viene abbandonato e Service Bus lo riconsegna. L'idempotenza rende sicuro il nuovo tentativo. Stato: Errore ritentabile.",
+            "h": [
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Timeout o errore transitorio di Dataverse",
+                [
+                  "fn.look",
+                  "fn.upd",
+                  "fn.rows"
+                ]
+              ],
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Messaggio abbandonato, torna in coda",
+                [
+                  "sb.cmd"
+                ]
+              ],
+              [
+                "sb",
+                "fn",
+                "e3",
+                1,
+                "Riconsegna del comando",
+                [
+                  "sb.cmd",
+                  "fn.idem"
+                ]
+              ],
+              [
+                "fn",
+                "ai",
+                "e5",
+                1,
+                "Tracciamento del tentativo fallito"
+              ]
+            ]
+          },
+          {
+            "id": "f8",
+            "g": "Gestione degli errori",
+            "t": "Errore definitivo e dead-letter",
+            "w": "Service Bus, Azure Function worker",
+            "note": "Errori applicativi (percorso non trovato o inattivo, lookup non risolta) o tentativi esauriti: il messaggio va in dead-letter e BC riceve un esito negativo. BC registra ERROR e non impegna il vino. Stato: Errore definitivo.",
+            "h": [
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Comando spostato in dead-letter",
+                [
+                  "sb.dlq"
+                ]
+              ],
+              [
+                "fn",
+                "ce",
+                "e4",
+                1,
+                "Richiesta in stato Errore definitivo",
+                [
+                  "fn.out",
+                  "ce.req"
+                ]
+              ],
+              [
+                "fn",
+                "sb",
+                "e3",
+                -1,
+                "Esito negativo sulla coda esiti",
+                [
+                  "fn.out",
+                  "sb.res"
+                ]
+              ],
+              [
+                "sb",
+                "bc",
+                "e2",
+                -1,
+                "BC registra ERROR con il messaggio",
+                [
+                  "sb.res",
+                  "bc.job",
+                  "bc.log"
+                ]
+              ]
+            ]
+          },
+          {
+            "id": "f9",
+            "g": "Controllo operativo",
+            "t": "Guardrail SEND senza esito",
+            "w": "Business Central, guardrail",
+            "note": "Vista delle operazioni con SEND e senza OK né ERROR oltre una soglia configurabile, con alert periodico: i casi emergono prima della fase di certificazione. Stato: Da riconciliare. Nessun retry automatico.",
+            "h": [
+              [
+                "bc",
+                "user",
+                "e1",
+                -1,
+                "Alert delle operazioni da riconciliare",
+                [
+                  "bc.guard",
+                  "bc.log"
+                ]
+              ]
+            ]
+          }
+        ],
+        "technologies": [
+          {
+            "id": "sb",
+            "g": "Microsoft Azure",
+            "n": "Azure Service Bus",
+            "icon": "sb",
+            "e": [
+              "sb"
+            ],
+            "d": "Coda comandi e coda esiti, con retry controllati e dead-letter queue."
+          },
+          {
+            "id": "func",
+            "g": "Microsoft Azure",
+            "n": "Azure Functions",
+            "icon": "func",
+            "e": [
+              "fn"
+            ],
+            "d": "Worker con trigger Service Bus che ospita la logica di impegno vino convertita dalla CWA; consumer scalabile."
+          },
+          {
+            "id": "ai",
+            "g": "Microsoft Azure",
+            "n": "Application Insights",
+            "icon": "ai",
+            "e": [
+              "ai",
+              "fn"
+            ],
+            "d": "Telemetria centralizzata e tracciamento end-to-end per RequestId."
+          },
+          {
+            "id": "kv",
+            "g": "Microsoft Azure",
+            "n": "Azure Key Vault",
+            "icon": "kv",
+            "e": [
+              "kv",
+              "fn"
+            ],
+            "d": "Segreti del worker, letti con identità gestita."
+          },
+          {
+            "id": "bc",
+            "g": "Microsoft Dynamics ed Entra",
+            "n": "Dynamics 365 Business Central",
+            "icon": "bc",
+            "e": [
+              "bc",
+              "user"
+            ],
+            "d": "Esteso con RequestId, publisher verso Service Bus, Job Queue per l'esito differito e vista guardrail."
+          },
+          {
+            "id": "ce",
+            "g": "Microsoft Dynamics ed Entra",
+            "n": "Dataverse / Customer Engagement",
+            "mono": "CE",
+            "e": [
+              "ce"
+            ],
+            "d": "Percorso di certificazione e righe collegate; chiavi alternative su bottiglie, recipienti e proprietà; registro richieste con stato."
+          },
+          {
+            "id": "entra",
+            "g": "Microsoft Dynamics ed Entra",
+            "n": "Microsoft Entra ID",
+            "icon": "entra",
+            "e": [
+              "entra",
+              "bc",
+              "fn"
+            ],
+            "d": "App registration per BC e per l'application user Dataverse, ruoli RBAC su Service Bus."
+          },
+          {
+            "id": "oauth",
+            "g": "Protocolli e pattern",
+            "n": "OAuth 2.0 client credentials",
+            "mono": "JWT",
+            "e": [
+              "bc",
+              "fn",
+              "entra"
+            ],
+            "d": "Token applicativi per BC verso Service Bus e per il worker verso Dataverse."
+          },
+          {
+            "id": "idem",
+            "g": "Protocolli e pattern",
+            "n": "Idempotenza per RequestId",
+            "mono": "ID",
+            "e": [
+              "bc",
+              "fn",
+              "ce"
+            ],
+            "d": "Ogni invio ha un identificativo univoco conservato in entrambi i sistemi: distingue invii, retry e payload diversi sullo stesso codice operazione."
+          },
+          {
+            "id": "webapi",
+            "g": "Protocolli e pattern",
+            "n": "Dataverse Web API",
+            "mono": "API",
+            "e": [
+              "fn",
+              "ce"
+            ],
+            "d": "Letture, Update, Upsert e avvio del workflow dal worker esterno; operazioni bulk dove vantaggiose."
+          }
+        ],
+        "authKinds": {
+          "mi": "Identità gestita",
+          "tok": "Token OAuth / OIDC",
+          "sec": "Segreto conservato",
+          "per": "Identità persona"
+        },
+        "auth": [
+          [
+            1,
+            "per",
+            "user",
+            [
+              "bc"
+            ],
+            "Utente Entra ID con licenza e permessi Business Central",
+            "identità della persona"
+          ],
+          [
+            2,
+            "tok",
+            "bc",
+            [
+              "sb"
+            ],
+            "OAuth 2.0 client credentials, ruoli Azure Service Bus Data Sender (coda comandi) e Data Receiver (coda esiti)",
+            "client secret in Isolated Storage di Business Central"
+          ],
+          [
+            3,
+            "mi",
+            "fn",
+            [
+              "sb"
+            ],
+            "Identità gestita + ruoli Data Receiver (coda comandi) e Data Sender (coda esiti)",
+            "nessuna da conservare"
+          ],
+          [
+            4,
+            "tok",
+            "fn",
+            [
+              "ce"
+            ],
+            "Application user Dataverse con security role dedicato, token Entra ID",
+            "client secret o certificato in Key Vault"
+          ],
+          [
+            5,
+            "mi",
+            "fn",
+            [
+              "kv",
+              "ai"
+            ],
+            "Identità gestita assegnata dal sistema + ruoli RBAC",
+            "nessuna da conservare"
+          ],
+          [
+            6,
+            "per",
+            "Amministratori",
+            [
+              "entra"
+            ],
+            "Utenti Entra ID, MFA obbligatoria",
+            "identità della persona"
+          ]
+        ]
+      },
+      "descrizione": "Modifica entità \"ce\"",
+      "origine": "manuale",
+      "autore": "Utente",
+      "data": "2026-10-02T09:37:40.371Z"
+    }
+  ],
+  "index": 2
+}

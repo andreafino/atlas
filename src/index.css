@@ -1,0 +1,111 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  --paper: #fbfaf8;
+  --panel: #f3f0ec;
+  --card: #ffffff;
+  --ink: #382f2d;
+  --muted: #76696a;
+  --rule: #e2dcd6;
+  --accent: #f08019;
+  --accent-ink: #b35a07;
+  --accent-soft: #fdebd9;
+  --band: rgba(56, 47, 45, 0.03);
+  --band-line: #c9c0b8;
+  --edge: #a89a94;
+  --edge-flow: #8a7f7a;
+}
+
+:root[data-theme="dark"] {
+  --paper: #171412;
+  --panel: #1f1a18;
+  --card: #262120;
+  --ink: #efe9e6;
+  --muted: #a99d98;
+  --rule: #3a322f;
+  --accent: #f5954a;
+  --accent-ink: #f7a763;
+  --accent-soft: #3a2616;
+  --band: rgba(239, 233, 230, 0.035);
+  --band-line: #4a3f3b;
+  --edge: #6f625d;
+  --edge-flow: #9c8f8a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #171412;
+    --panel: #1f1a18;
+    --card: #262120;
+    --ink: #efe9e6;
+    --muted: #a99d98;
+    --rule: #3a322f;
+    --accent: #f5954a;
+    --accent-ink: #f7a763;
+    --accent-soft: #3a2616;
+    --band: rgba(239, 233, 230, 0.035);
+    --band-line: #4a3f3b;
+    --edge: #6f625d;
+    --edge-flow: #9c8f8a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  color-scheme: light dark;
+}
+
+@keyframes eosFlow {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes eosFlowRev {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 24;
+  }
+}
+@keyframes eosPulse {
+  0%,
+  100% {
+    opacity: 0.16;
+  }
+  50% {
+    opacity: 0.34;
+  }
+}
+@keyframes eosPanelIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes eosOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

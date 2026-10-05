@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Designer in Teams</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+a{color:#B35A07}a:hover{color:#F08019}
+button{font:inherit;color:inherit}
+</style>
+</helmet>
+<div style="width:1440px;height:900px;display:grid;grid-template-columns:68px minmax(0,1fr);background:#FBFAF8;color:#382F2D;font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.45;overflow:hidden">
+  <nav aria-label="Barra app Teams" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0;background:#EDE9E4;border-right:1px solid #E2DCD6">
+    <button type="button" aria-label="Attività" style="width:48px;height:48px;border:0;border-radius:10px;background:transparent;display:grid;place-items:center;color:#76696A;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></button>
+    <button type="button" aria-label="Chat" style="width:48px;height:48px;border:0;border-radius:10px;background:transparent;display:grid;place-items:center;color:#76696A;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></button>
+    <button type="button" aria-label="Team" aria-current="page" style="width:48px;height:48px;border:0;border-radius:10px;background:#FFFFFF;display:grid;place-items:center;color:#382F2D;cursor:pointer;box-shadow:0 1px 2px rgba(56,47,45,.15)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></button>
+    <a href="Main.dc.html" aria-label="Architetture EOS – tutti i progetti" style="width:48px;height:48px;border-radius:10px;display:grid;place-items:center;text-decoration:none;font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:13px;color:#F08019">EOS</a>
+  </nav>
+  <div style="display:grid;grid-template-rows:56px 52px 792px;min-width:0">
+    <header style="display:flex;align-items:center;gap:14px;padding:0 24px;border-bottom:1px solid #E2DCD6;background:#FFFFFF">
+      <span style="width:32px;height:32px;border-radius:8px;background:#FDEBD9;color:#B35A07;display:grid;place-items:center;font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:13px">EC</span>
+      <span style="font-weight:700">E-commerce B2C</span>
+      <span style="color:#76696A">›</span>
+      <a href="Dashboard.dc.html" style="color:#76696A;text-decoration:none">Architettura</a>
+      <span style="color:#76696A">›</span>
+      <span style="font-weight:600">Architettura E-commerce BC</span>
+      <span style="margin-left:auto;font-size:13px;color:#76696A">Salvato · <span style="font-family:'JetBrains Mono',monospace;color:#B35A07">v1.{{ version }}</span></span>
+    </header>
+    <div role="toolbar" aria-label="Strumenti del diagramma" style="display:flex;align-items:center;gap:6px;padding:0 16px;border-bottom:1px solid #E2DCD6;background:#FBFAF8">
+      <button type="button" style="height:36px;border:1px solid #E2DCD6;border-radius:8px;padding:0 12px;background:#FFFFFF;cursor:pointer;font-size:13.5px;display:flex;align-items:center;gap:6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M12 9v6M9 12h6"></path></svg>Entità</button>
+      <button type="button" style="height:36px;border:1px solid #E2DCD6;border-radius:8px;padding:0 12px;background:#FFFFFF;cursor:pointer;font-size:13.5px;display:flex;align-items:center;gap:6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h12"></path><path d="m12 8 4 4-4 4"></path><path d="M20 6v12"></path></svg>Flusso</button>
+      <button type="button" style="height:36px;border:1px solid #E2DCD6;border-radius:8px;padding:0 12px;background:#FFFFFF;cursor:pointer;font-size:13.5px;display:flex;align-items:center;gap:6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5z"></path><path d="m3 17 9 5 9-5"></path></svg>Tecnologia</button>
+      <button type="button" style="height:36px;border:1px solid #E2DCD6;border-radius:8px;padding:0 12px;background:#FFFFFF;cursor:pointer;font-size:13.5px;display:flex;align-items:center;gap:6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg>Collega</button>
+      <button type="button" style="height:36px;border:1px solid #E2DCD6;border-radius:8px;padding:0 12px;background:#FFFFFF;cursor:pointer;font-size:13.5px;display:flex;align-items:center;gap:6px;color:#A3361B"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M6 6l1 14h10l1-14"></path></svg>Elimina</button>
+      <span style="width:1px;height:24px;background:#E2DCD6;margin:0 6px"></span>
+      <button type="button" aria-label="Annulla" onClick="{{ undo }}" style="width:36px;height:36px;border:1px solid #E2DCD6;border-radius:8px;background:#FFFFFF;cursor:pointer;display:grid;place-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"></path><path d="M4 9h11a5 5 0 0 1 0 10h-3"></path></svg></button>
+      <button type="button" aria-label="Ripeti" style="width:36px;height:36px;border:1px solid #E2DCD6;border-radius:8px;background:#FFFFFF;cursor:pointer;display:grid;place-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"></path><path d="M20 9H9a5 5 0 0 0 0 10h3"></path></svg></button>
+      <button type="button" onClick="{{ showHistory }}" style="height:36px;border:1px solid #E2DCD6;border-radius:8px;padding:0 12px;background:#FFFFFF;cursor:pointer;font-size:13.5px;display:flex;align-items:center;gap:6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Storico</button>
+      <span style="margin-left:auto;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#76696A">Livello C4</span>
+      <div role="group" aria-label="Livello C4" style="display:flex;gap:2px;padding:3px;border-radius:8px;background:#F3F0EC">
+        <sc-for list="{{ levels }}" as="l" hint-placeholder-count="5">
+          <sc-if value="{{ l.active }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ l.pick }}" style="border:0;border-radius:6px;padding:6px 11px;font-size:13px;font-weight:600;background:#FFFFFF;cursor:pointer;box-shadow:0 1px 2px rgba(56,47,45,.15)">{{ l.label }}</button></sc-if>
+          <sc-if value="{{ l.inactive }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ l.pick }}" style="border:0;border-radius:6px;padding:6px 11px;font-size:13px;background:transparent;color:#76696A;cursor:pointer">{{ l.label }}</button></sc-if>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) 340px;min-height:0;height:792px">
+      <div style="min-width:0;height:792px;overflow:hidden">
+        <dc-import name="Designer" frame-height="792px" hint-size="100%,792px"></dc-import>
+      </div>
+      <aside aria-label="Pannello assistente e ADR" style="display:flex;flex-direction:column;min-height:0;height:792px;border-left:1px solid #E2DCD6;background:#F3F0EC">
+        <div role="tablist" style="display:flex;padding:0 16px;border-bottom:1px solid #E2DCD6">
+          <sc-for list="{{ panels }}" as="p" hint-placeholder-count="3">
+            <sc-if value="{{ p.active }}" hint-placeholder-val="{{ false }}"><button type="button" role="tab" aria-selected="true" onClick="{{ p.pick }}" style="flex:1;border:0;background:transparent;padding:14px 4px 11px;border-bottom:3px solid #F08019;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">{{ p.label }}</button></sc-if>
+            <sc-if value="{{ p.inactive }}" hint-placeholder-val="{{ true }}"><button type="button" role="tab" onClick="{{ p.pick }}" style="flex:1;border:0;background:transparent;padding:14px 4px 11px;border-bottom:3px solid transparent;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:#76696A;cursor:pointer">{{ p.label }}</button></sc-if>
+          </sc-for>
+        </div>
+        <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;min-height:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="align-self:flex-end;max-width:88%;padding:10px 12px;border-radius:10px 10px 2px 10px;background:#382F2D;color:#FBFAF8;font-size:14px">Aggiungi un API Management per i partner che chiama l'API e-commerce con OAuth</div>
+            <div style="padding:12px;border-radius:10px 10px 10px 2px;background:#FFFFFF;border:1px solid #E2DCD6;font-size:14px;display:grid;gap:10px">
+              <span>Ho trovato in OneNote un'interfaccia già documentata: <strong>API ordini partner v2</strong>. La uso, o creo un nuovo flusso?</span>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <button type="button" style="border:1px solid #F08019;border-radius:999px;padding:5px 12px;font-size:13px;color:#B35A07;font-weight:600;background:#FFFFFF;cursor:pointer">Usa API ordini partner v2</button>
+                <button type="button" style="border:1px solid #E2DCD6;border-radius:999px;padding:5px 12px;font-size:13px;background:#FFFFFF;cursor:pointer">Nuovo flusso</button>
+              </div>
+            </div>
+            <div style="align-self:flex-end;max-width:88%;padding:10px 12px;border-radius:10px 10px 2px 10px;background:#382F2D;color:#FBFAF8;font-size:14px">Usa quella documentata</div>
+            <sc-if value="{{ applied }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:12px;border-radius:10px 10px 10px 2px;background:#FFFFFF;border:1px solid #E2DCD6;font-size:14px;display:grid;gap:8px">
+                <span style="font-weight:600">Applicate 3 modifiche al diagramma</span>
+                <sc-for list="{{ changes }}" as="c" hint-placeholder-count="3">
+                  <div style="display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;align-items:start">
+                    <span style="width:20px;height:20px;border-radius:50%;background:#FDEBD9;color:#B35A07;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500">+</span>
+                    <span style="display:grid"><span style="font-size:13.5px;font-weight:600">{{ c.what }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#B35A07">{{ c.detail }}</span></span>
+                  </div>
+                </sc-for>
+                <div style="display:flex;gap:6px;padding-top:4px">
+                  <button type="button" onClick="{{ undo }}" style="border:1px solid #E2DCD6;border-radius:6px;padding:5px 12px;font-size:13px;background:#FBFAF8;cursor:pointer">Annulla</button>
+                  <button type="button" onClick="{{ showAdr }}" style="border:1px solid #E2DCD6;border-radius:6px;padding:5px 12px;font-size:13px;background:#FBFAF8;cursor:pointer">Crea ADR</button>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ undone }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:10px 12px;border-radius:8px;background:#FFFFFF;border:1px dashed #C9C0B8;font-size:13.5px;color:#5E5250">Modifiche annullate. Il diagramma è tornato alla versione v1.{{ version }}.</div>
+            </sc-if>
+          </div>
+          <form style="padding:12px 16px 16px;display:flex;gap:8px;border-top:1px solid #E2DCD6">
+            <label for="ask-diag" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Descrivi una modifica</label>
+            <input id="ask-diag" type="text" placeholder="Descrivi la modifica al diagramma…" style="flex:1;height:44px;border:1px solid #E2DCD6;border-radius:8px;padding:0 12px;font:inherit;font-size:14px;background:#FFFFFF">
+            <button type="button" aria-label="Invia" style="width:44px;height:44px;border:0;border-radius:8px;background:#F08019;color:#FFFFFF;display:grid;place-items:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"></path><path d="M22 2 11 13"></path></svg></button>
+          </form>
+        </sc-if>
+        <sc-if value="{{ isAdr }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;min-height:0;overflow-y:auto;padding:12px 16px;display:grid;align-content:start;gap:8px">
+            <button type="button" style="height:40px;border:1px dashed #C9C0B8;border-radius:8px;background:transparent;cursor:pointer;font-size:14px;color:#5E5250">+ Nuovo ADR</button>
+            <sc-for list="{{ adrs }}" as="a" hint-placeholder-count="4">
+              <div style="padding:12px;border-radius:8px;background:#FFFFFF;border:1px solid #E2DCD6;display:grid;gap:6px">
+                <div style="display:flex;gap:8px;align-items:baseline">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:#B35A07">{{ a.id }}</span>
+                  <span style="margin-left:auto;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;{{ a.badge }}">{{ a.status }}</span>
+                </div>
+                <span style="font-weight:600;font-size:14.5px;line-height:1.3">{{ a.title }}</span>
+                <span style="font-size:13px;color:#5E5250">{{ a.why }}</span>
+                <span style="font-size:12.5px;color:#76696A">Riferito a: <span style="font-weight:600;color:#382F2D">{{ a.ref }}</span></span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+          <ol style="flex:1;min-height:0;overflow-y:auto;margin:0;padding:12px 16px;list-style:none;display:grid;align-content:start;gap:6px">
+            <sc-for list="{{ history }}" as="h" hint-placeholder-count="4">
+              <li style="padding:10px 12px;border-radius:8px;background:#FFFFFF;border:1px solid #E2DCD6;display:grid;gap:2px">
+                <div style="display:flex;gap:8px;align-items:baseline"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:#B35A07">{{ h.v }}</span><span style="font-size:12.5px;color:#76696A;margin-left:auto">{{ h.when }}</span></div>
+                <span style="font-size:14px">{{ h.what }}</span>
+                <span style="font-size:12.5px;color:#76696A">{{ h.who }}</span>
+              </li>
+            </sc-for>
+          </ol>
+        </sc-if>
+      </aside>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+const ADRS = [
+  { id: 'ADR-001', status: 'Accettato', title: 'Service Bus tra e-commerce ed ERP', why: 'Gli ordini non si perdono se Business Central è fermo.', ref: 'Service Bus' },
+  { id: 'ADR-002', status: 'Accettato', title: 'Ordine pagato solo sul webhook Stripe firmato', why: 'Il ritorno del browser può non arrivare.', ref: 'Flusso 05 · Conferma del pagamento' },
+  { id: 'ADR-003', status: 'Accettato', title: 'Clienti su Entra External ID', why: 'Identità dei clienti separate da quelle dei dipendenti.', ref: 'Entra External ID' },
+  { id: 'ADR-004', status: 'Proposto', title: 'API Management dedicato ai partner', why: 'Esporre l’API ordini ai partner senza toccare il canale B2C.', ref: 'Intero diagramma' }
+];
+const BADGE = { 'Accettato': 'background:#E3EFE6;color:#245C36', 'Proposto': 'background:#FDEBD9;color:#8A4405' };
+class Component extends DCLogic {
+  state = { panel: 'chat', level: 'Container', undone: false };
+  renderVals() {
+    const s = this.state;
+    return {
+      version: s.undone ? 4 : 5,
+      applied: !s.undone, undone: s.undone,
+      undo: () => this.setState({ undone: true }),
+      showAdr: () => this.setState({ panel: 'adr' }),
+      showHistory: () => this.setState({ panel: 'history' }),
+      isChat: s.panel === 'chat', isAdr: s.panel === 'adr', isHistory: s.panel === 'history',
+      panels: [['chat', 'Assistente'], ['adr', 'ADR'], ['history', 'Storico']].map(([k, l]) => ({ label: l, active: s.panel === k, inactive: s.panel !== k, pick: () => this.setState({ panel: k }) })),
+      levels: ['Landscape', 'Context', 'Container', 'Component', 'Deployment'].map(l => ({ label: l, active: s.level === l, inactive: s.level !== l, pick: () => this.setState({ level: l }) })),
+      changes: [
+        { what: 'Entità «APIM partner»', detail: 'Container · Azure API Management' },
+        { what: 'Collegamento APIM partner → API e-commerce', detail: 'REST + OAuth 2.0 · API ordini partner v2' },
+        { what: 'Tecnologia OAuth 2.0 associata', detail: 'Framework e protocolli' }
+      ],
+      adrs: ADRS.map(a => ({ ...a, badge: BADGE[a.status] })),
+      history: [
+        { v: 'v1.5', what: 'Aggiunto APIM partner e collegamento all’API', who: 'Assistente, su richiesta di [Nome]', when: 'adesso' },
+        { v: 'v1.4', what: 'Flusso 11 · Sincronizzazione del catalogo', who: '[Nome]', when: 'ieri' },
+        { v: 'v1.3', what: 'Private endpoint per SQL e Service Bus', who: '[Nome]', when: '28 set' },
+        { v: 'v1.0', what: 'Prima versione del diagramma', who: '[Nome]', when: '22 set' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.19/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.19",
+  "version": "1.0.0",
+  "id": "${{TEAMS_APP_ID}}",
+  "developer": {
+    "name": "[Nome organizzazione]",
+    "websiteUrl": "https://${{TAB_DOMAIN}}",
+    "privacyUrl": "https://${{TAB_DOMAIN}}/privacy",
+    "termsOfUseUrl": "https://${{TAB_DOMAIN}}/termsofuse"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "EOS Architetture",
+    "full": "EOS Architetture - Diagrammi e ADR"
+  },
+  "description": {
+    "short": "Diagrammi architetturali e ADR per progetto",
+    "full": "Gestisci diagrammi architetturali (modello C4) e Architecture Decision Record per i progetti del tuo team, con i dati del progetto sincronizzati dai team Teams di cui fai parte."
+  },
+  "accentColor": "#F08019",
+  "staticTabs": [
+    {
+      "entityId": "progetti",
+      "name": "Architetture",
+      "contentUrl": "https://${{TAB_DOMAIN}}/",
+      "websiteUrl": "https://${{TAB_DOMAIN}}/",
+      "scopes": ["personal"]
+    }
+  ],
+  "permissions": ["identity"],
+  "validDomains": ["${{TAB_DOMAIN}}"],
+  "webApplicationInfo": {
+    "id": "${{AAD_APP_CLIENT_ID}}",
+    "resource": "api://${{TAB_DOMAIN}}/${{AAD_APP_CLIENT_ID}}"
+  }
+}

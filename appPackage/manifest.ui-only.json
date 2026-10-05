@@ -1,0 +1,35 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.19/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.19",
+  "version": "1.0.0",
+  "id": "5c332e6b-55c6-4e00-859c-f891d2b61c06",
+  "developer": {
+    "name": "[Nome organizzazione]",
+    "websiteUrl": "https://1t4svhvb-5174.uks1.devtunnels.ms",
+    "privacyUrl": "https://1t4svhvb-5174.uks1.devtunnels.ms/privacy",
+    "termsOfUseUrl": "https://1t4svhvb-5174.uks1.devtunnels.ms/termsofuse"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "EOS Architetture",
+    "full": "EOS Architetture - Diagrammi e ADR"
+  },
+  "description": {
+    "short": "Diagrammi architetturali e ADR per progetto",
+    "full": "Gestisci diagrammi architetturali (modello C4) e Architecture Decision Record per i progetti del tuo team."
+  },
+  "accentColor": "#F08019",
+  "staticTabs": [
+    {
+      "entityId": "progetti",
+      "name": "Architetture",
+      "contentUrl": "https://1t4svhvb-5174.uks1.devtunnels.ms/",
+      "websiteUrl": "https://1t4svhvb-5174.uks1.devtunnels.ms/",
+      "scopes": ["personal"]
+    }
+  ],
+  "validDomains": ["1t4svhvb-5174.uks1.devtunnels.ms"]
+}

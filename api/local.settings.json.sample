@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AAD_APP_CLIENT_ID": "",
+    "AAD_APP_TENANT_ID": "",
+    "AAD_APP_CLIENT_SECRET": "",
+    "ALLOWED_ORIGIN": "http://localhost:5173"
+  },
+  "Host": {
+    "CORS": "http://localhost:5173",
+    "CORSCredentials": false
+  }
+}

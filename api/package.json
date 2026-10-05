@@ -1,0 +1,22 @@
+{
+  "name": "eos-architetture-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend minimo (Azure Functions) per lo scambio on-behalf-of del token SSO della tab Teams verso Microsoft Graph. Vedi TEAMS_SETUP.md.",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "watch": "tsc -p . --watch",
+    "start": "npm run build && func start",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.7.0",
+    "@azure/msal-node": "^2.16.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,1607 @@
+{
+ "bands": [
+  {
+   "l": "TENANT EXTERNAL ID",
+   "x": 40,
+   "y": 40,
+   "w": 270,
+   "h": 140
+  },
+  {
+   "l": "INTERNET",
+   "x": 320,
+   "y": 40,
+   "w": 560,
+   "h": 140
+  },
+  {
+   "l": "SERVIZI ESTERNI",
+   "x": 1160,
+   "y": 40,
+   "w": 280,
+   "h": 1360
+  },
+  {
+   "l": "SOTTOSCRIZIONE AZURE E-COMMERCE · WEST EUROPE",
+   "x": 40,
+   "y": 210,
+   "w": 1100,
+   "h": 960
+  },
+  {
+   "l": "VNET · SUBNET PRIVATE",
+   "x": 50,
+   "y": 820,
+   "w": 830,
+   "h": 320
+  },
+  {
+   "l": "TENANT ENTRA ID AZIENDALE",
+   "x": 40,
+   "y": 1200,
+   "w": 540,
+   "h": 280
+  },
+  {
+   "l": "ON-PREMISE · MAGAZZINO",
+   "x": 40,
+   "y": 1510,
+   "w": 270,
+   "h": 130
+  }
+ ],
+ "entities": [
+  {
+   "id": "ext",
+   "n": "Entra External ID",
+   "s": [
+    "login clienti, OIDC",
+    "emette il JWT del cliente"
+   ],
+   "icon": "ext",
+   "band": "Tenant External ID",
+   "x": 60,
+   "y": 80,
+   "desc": "Account dei clienti: registrazione e login, separati dalle identità dei dipendenti."
+  },
+  {
+   "id": "browser",
+   "n": "Browser cliente",
+   "s": [
+    "desktop e mobile",
+    "sito responsive, nessuna app"
+   ],
+   "mono": "WWW",
+   "band": "Internet",
+   "x": 340,
+   "y": 80,
+   "desc": "Il cliente usa il sito responsive da desktop e mobile; non è prevista un'app nativa."
+  },
+  {
+   "id": "cdn",
+   "n": "Cloudflare",
+   "s": [
+    "DNS e CDN del sito",
+    "cache delle immagini prodotto"
+   ],
+   "icon": "cloudflare",
+   "band": "Internet",
+   "x": 620,
+   "y": 80,
+   "desc": "DNS, certificato e CDN davanti a storefront e immagini prodotto."
+  },
+  {
+   "id": "kv",
+   "n": "Azure Key Vault",
+   "s": [
+    "segreti, uno per ambiente",
+    "letto con identità gestita"
+   ],
+   "icon": "kv",
+   "band": "Sottoscrizione Azure e-commerce · West Europe",
+   "x": 60,
+   "y": 260,
+   "desc": "Tutti i segreti del progetto (Stripe, SendGrid, BRT, Business Central, function key), uno per ambiente."
+  },
+  {
+   "id": "ai",
+   "n": "Application Insights",
+   "s": [
+    "+ Log Analytics workspace",
+    "telemetria app e Functions"
+   ],
+   "icon": "ai",
+   "band": "Sottoscrizione Azure e-commerce · West Europe",
+   "x": 340,
+   "y": 260,
+   "desc": "Log, metriche e tracciamento delle chiamate tra componenti."
+  },
+  {
+   "id": "store",
+   "n": "Storefront",
+   "s": [
+    "Next.js su App Service",
+    "pagine e sessione cliente"
+   ],
+   "icon": "app",
+   "band": "Sottoscrizione Azure e-commerce · West Europe",
+   "x": 620,
+   "y": 260,
+   "desc": "Next.js su App Service: il sito che vede il cliente."
+  },
+  {
+   "id": "blob",
+   "n": "Blob Storage",
+   "s": [
+    "immagini prodotto",
+    "origine della CDN Cloudflare"
+   ],
+   "icon": "blob",
+   "band": "Sottoscrizione Azure e-commerce · West Europe",
+   "x": 900,
+   "y": 260,
+   "desc": "Immagini prodotto, origine della CDN Cloudflare; anche storage di servizio delle Functions."
+  },
+  {
+   "id": "apim",
+   "n": "API Management",
+   "s": [
+    "valida JWT e subscription key",
+    "riceve il webhook Stripe"
+   ],
+   "icon": "apim",
+   "band": "Sottoscrizione Azure e-commerce · West Europe",
+   "x": 620,
+   "y": 390,
+   "desc": "Valida JWT e subscription key davanti all'API e riceve il webhook Stripe."
+  },
+  {
+   "id": "api",
+   "n": "API e-commerce",
+   "s": [
+    ".NET 8 su App Service"
+   ],
+   "icon": "app",
+   "band": "Sottoscrizione Azure e-commerce · West Europe",
+   "x": 620,
+   "y": 520,
+   "h": 258,
+   "desc": ".NET 8 su App Service: catalogo, carrello, checkout, area cliente. Accetta traffico solo da API Management.",
+   "mods": [
+    {
+     "id": "api.cat",
+     "t": "Catalogo",
+     "s": "prodotti, prezzi, giacenze"
+    },
+    {
+     "id": "api.cart",
+     "t": "Carrello",
+     "s": "controllo giacenza"
+    },
+    {
+     "id": "api.chk",
+     "t": "Checkout",
+     "s": "pagamento Stripe, webhook"
+    },
+    {
+     "id": "api.area",
+     "t": "Area cliente",
+     "s": "ordini, stato spedizione"
+    }
+   ]
+  },
+  {
+   "id": "sb",
+   "n": "Service Bus",
+   "s": [
+    "topic ordini",
+    "ordine pagato, ordine spedito"
+   ],
+   "icon": "sb",
+   "band": "VNet · subnet private",
+   "x": 340,
+   "y": 860,
+   "desc": "Disaccoppia e-commerce ed ERP: gli ordini non si perdono se Business Central è fermo. Il private endpoint richiede il tier Premium."
+  },
+  {
+   "id": "sql",
+   "n": "Azure SQL Database",
+   "s": [
+    "catalogo, carrelli, ordini",
+    "private endpoint"
+   ],
+   "icon": "sql",
+   "band": "VNet · subnet private",
+   "x": 620,
+   "y": 860,
+   "desc": "Catalogo online, carrelli, ordini. Raggiungibile solo tramite private endpoint."
+  },
+  {
+   "id": "fn",
+   "n": "Azure Functions",
+   "s": [
+    "integrazione ERP"
+   ],
+   "icon": "func",
+   "band": "VNet · subnet private",
+   "x": 60,
+   "y": 860,
+   "h": 258,
+   "desc": "Le quattro integrazioni con Business Central e BRT; piano Flex Consumption o Premium per l'integrazione di rete.",
+   "mods": [
+    {
+     "id": "fn.cat",
+     "t": "Sync catalogo",
+     "s": "BC → SQL e Blob, ogni 15 min"
+    },
+    {
+     "id": "fn.stock",
+     "t": "Sync giacenze",
+     "s": "su webhook di BC"
+    },
+    {
+     "id": "fn.ord",
+     "t": "Invio ordini",
+     "s": "Service Bus → BC"
+    },
+    {
+     "id": "fn.ship",
+     "t": "Stato spedizione",
+     "s": "BRT → SQL e Service Bus"
+    }
+   ]
+  },
+  {
+   "id": "stripe",
+   "n": "Stripe",
+   "s": [
+    "carta, Apple Pay, Google Pay",
+    "test in staging, live in prod"
+   ],
+   "icon": "stripe",
+   "band": "Servizi esterni",
+   "x": 1180,
+   "y": 390,
+   "desc": "Pagamenti con carta, Apple Pay e Google Pay. I dati della carta restano su Stripe."
+  },
+  {
+   "id": "sendgrid",
+   "n": "SendGrid",
+   "s": [
+    "email transazionali",
+    "conferma ordine, spedizione"
+   ],
+   "icon": "sendgrid",
+   "band": "Servizi esterni",
+   "x": 1180,
+   "y": 620,
+   "desc": "Email transazionali con dominio mittente autenticato (SPF e DKIM su Cloudflare)."
+  },
+  {
+   "id": "brt",
+   "n": "BRT",
+   "s": [
+    "API etichette e tracking",
+    "utenza test e produzione"
+   ],
+   "mono": "BRT",
+   "band": "Servizi esterni",
+   "x": 1180,
+   "y": 1050,
+   "desc": "API etichette e tracking del corriere, con utenza di test e di produzione."
+  },
+  {
+   "id": "fic",
+   "n": "Fatture in Cloud",
+   "s": [
+    "invio fatture allo SDI",
+    "già collegato a BC"
+   ],
+   "mono": "FiC",
+   "band": "Servizi esterni",
+   "x": 1180,
+   "y": 1300,
+   "desc": "Fattura elettronica verso SDI, già collegato a Business Central. Invariato."
+  },
+  {
+   "id": "bc",
+   "n": "Business Central",
+   "s": [
+    "SaaS, ambienti sandbox e prod"
+   ],
+   "icon": "bc",
+   "band": "Tenant Entra ID aziendale",
+   "x": 60,
+   "y": 1240,
+   "h": 210,
+   "desc": "Resta com'è per contabilità e ordini da agenti. Si aggiungono API custom per le giacenze, integrazione BRT per le etichette e webhook subscription verso le Functions.",
+   "mods": [
+    {
+     "id": "bc.api",
+     "t": "API custom giacenze",
+     "s": "lette dalle Functions"
+    },
+    {
+     "id": "bc.brt",
+     "t": "Integrazione BRT",
+     "s": "etichetta a evasione ordine"
+    },
+    {
+     "id": "bc.fic",
+     "t": "Fatture in Cloud",
+     "s": "fattura elettronica"
+    }
+   ]
+  },
+  {
+   "id": "entra",
+   "n": "Microsoft Entra ID",
+   "s": [
+    "identità dipendenti",
+    "MFA, PIM, app registration"
+   ],
+   "icon": "entra",
+   "band": "Tenant Entra ID aziendale",
+   "x": 340,
+   "y": 1378,
+   "desc": "Identità dei dipendenti; ospita le app registration e i gruppi PIM del progetto."
+  },
+  {
+   "id": "barcode",
+   "n": "Lettori barcode",
+   "s": [
+    "app mobile standard di BC"
+   ],
+   "mono": "EAN",
+   "band": "On-premise · magazzino",
+   "x": 60,
+   "y": 1545,
+   "desc": "App mobile standard di Business Central per la preparazione in magazzino."
+  }
+ ],
+ "edges": [
+  {
+   "id": "e1",
+   "a": "browser",
+   "b": "ext",
+   "d": [
+    [
+     340,
+     116
+    ],
+    [
+     300,
+     116
+    ]
+   ],
+   "l": "OIDC",
+   "lx": 320,
+   "ly": 104
+  },
+  {
+   "id": "e2",
+   "a": "browser",
+   "b": "cdn",
+   "d": [
+    [
+     580,
+     116
+    ],
+    [
+     620,
+     116
+    ]
+   ]
+  },
+  {
+   "id": "e3",
+   "a": "cdn",
+   "b": "store",
+   "d": [
+    [
+     740,
+     152
+    ],
+    [
+     740,
+     260
+    ]
+   ],
+   "l": "HTTPS",
+   "lx": 740,
+   "ly": 242
+  },
+  {
+   "id": "e4",
+   "a": "cdn",
+   "b": "blob",
+   "d": [
+    [
+     860,
+     116
+    ],
+    [
+     1020,
+     116
+    ],
+    [
+     1020,
+     260
+    ]
+   ],
+   "l": "immagini",
+   "lx": 1020,
+   "ly": 240
+  },
+  {
+   "id": "e5",
+   "a": "store",
+   "b": "apim",
+   "d": [
+    [
+     740,
+     332
+    ],
+    [
+     740,
+     390
+    ]
+   ],
+   "l": "REST + JWT",
+   "lx": 790,
+   "ly": 382
+  },
+  {
+   "id": "e6",
+   "a": "apim",
+   "b": "api",
+   "d": [
+    [
+     740,
+     462
+    ],
+    [
+     740,
+     520
+    ]
+   ],
+   "l": "REST",
+   "lx": 740,
+   "ly": 496
+  },
+  {
+   "id": "e7",
+   "a": "stripe",
+   "b": "apim",
+   "d": [
+    [
+     1180,
+     426
+    ],
+    [
+     860,
+     426
+    ]
+   ],
+   "l": "webhook pagamento",
+   "lx": 1020,
+   "ly": 430
+  },
+  {
+   "id": "e8",
+   "a": "api",
+   "b": "stripe",
+   "d": [
+    [
+     860,
+     550
+    ],
+    [
+     1300,
+     550
+    ],
+    [
+     1300,
+     462
+    ]
+   ],
+   "l": "crea pagamento",
+   "lx": 1020,
+   "ly": 554
+  },
+  {
+   "id": "e9",
+   "a": "api",
+   "b": "sendgrid",
+   "d": [
+    [
+     860,
+     656
+    ],
+    [
+     1180,
+     656
+    ]
+   ],
+   "l": "email",
+   "lx": 1020,
+   "ly": 660
+  },
+  {
+   "id": "e10",
+   "a": "api",
+   "b": "sql",
+   "d": [
+    [
+     740,
+     778
+    ],
+    [
+     740,
+     860
+    ]
+   ],
+   "l": "SQL",
+   "lx": 740,
+   "ly": 804
+  },
+  {
+   "id": "e11",
+   "a": "api",
+   "b": "sb",
+   "d": [
+    [
+     620,
+     740
+    ],
+    [
+     460,
+     740
+    ],
+    [
+     460,
+     860
+    ]
+   ],
+   "l": "ordine pagato / spedito",
+   "lx": 460,
+   "ly": 794,
+   "bi": true
+  },
+  {
+   "id": "e12",
+   "a": "fn",
+   "b": "sb",
+   "d": [
+    [
+     300,
+     896
+    ],
+    [
+     340,
+     896
+    ]
+   ],
+   "bi": true
+  },
+  {
+   "id": "e13",
+   "a": "fn",
+   "b": "sql",
+   "d": [
+    [
+     300,
+     990
+    ],
+    [
+     740,
+     990
+    ],
+    [
+     740,
+     932
+    ]
+   ],
+   "l": "catalogo, giacenze, stato",
+   "lx": 520,
+   "ly": 994
+  },
+  {
+   "id": "e14",
+   "a": "fn",
+   "b": "blob",
+   "d": [
+    [
+     240,
+     860
+    ],
+    [
+     240,
+     361
+    ],
+    [
+     1020,
+     361
+    ],
+    [
+     1020,
+     332
+    ]
+   ],
+   "l": "immagini prodotto",
+   "lx": 240,
+   "ly": 604
+  },
+  {
+   "id": "e15",
+   "a": "fn",
+   "b": "brt",
+   "d": [
+    [
+     300,
+     1086
+    ],
+    [
+     1180,
+     1086
+    ]
+   ],
+   "l": "tracking",
+   "lx": 1020,
+   "ly": 1090
+  },
+  {
+   "id": "e16",
+   "a": "fn",
+   "b": "bc",
+   "d": [
+    [
+     270,
+     1118
+    ],
+    [
+     270,
+     1240
+    ]
+   ],
+   "l": "API · webhook giacenze",
+   "lx": 270,
+   "ly": 1184,
+   "bi": true
+  },
+  {
+   "id": "e17",
+   "a": "bc",
+   "b": "brt",
+   "d": [
+    [
+     300,
+     1280
+    ],
+    [
+     1150,
+     1280
+    ],
+    [
+     1150,
+     1110
+    ],
+    [
+     1180,
+     1110
+    ]
+   ],
+   "l": "etichetta",
+   "lx": 720,
+   "ly": 1284
+  },
+  {
+   "id": "e18",
+   "a": "bc",
+   "b": "fic",
+   "d": [
+    [
+     300,
+     1336
+    ],
+    [
+     1180,
+     1336
+    ]
+   ],
+   "l": "fattura (flusso esistente)",
+   "lx": 720,
+   "ly": 1340
+  },
+  {
+   "id": "e19",
+   "a": "barcode",
+   "b": "bc",
+   "d": [
+    [
+     270,
+     1545
+    ],
+    [
+     270,
+     1450
+    ]
+   ],
+   "l": "app mobile",
+   "lx": 270,
+   "ly": 1494
+  }
+ ],
+ "flows": [
+  {
+   "id": "f1",
+   "g": "Percorso di un ordine",
+   "t": "Navigazione del catalogo",
+   "w": "Storefront",
+   "note": "Il catalogo in Azure SQL è alimentato da sync catalogo ogni 15 minuti; le immagini arrivano da Blob Storage tramite la CDN Cloudflare.",
+   "h": [
+    [
+     "browser",
+     "cdn",
+     "e2",
+     1,
+     "Richiesta HTTPS del sito"
+    ],
+    [
+     "cdn",
+     "store",
+     "e3",
+     1,
+     "Pagina servita dallo storefront"
+    ],
+    [
+     "store",
+     "apim",
+     "e5",
+     1,
+     "Chiamata REST all'API"
+    ],
+    [
+     "apim",
+     "api",
+     "e6",
+     1,
+     "Inoltro al modulo catalogo",
+     [
+      "api.cat"
+     ]
+    ],
+    [
+     "api",
+     "sql",
+     "e10",
+     1,
+     "Lettura di prodotti, prezzi e giacenze",
+     [
+      "api.cat"
+     ]
+    ],
+    [
+     "cdn",
+     "blob",
+     "e4",
+     1,
+     "Immagini prodotto dalla CDN"
+    ]
+   ]
+  },
+  {
+   "id": "f2",
+   "g": "Percorso di un ordine",
+   "t": "Carrello con controllo della giacenza",
+   "w": "API e-commerce, modulo carrello",
+   "note": "La giacenza letta dal carrello è quella aggiornata al cambio in Business Central, non al ciclo dei 15 minuti.",
+   "h": [
+    [
+     "bc",
+     "fn",
+     "e16",
+     -1,
+     "Webhook di variazione giacenza",
+     [
+      "bc.api",
+      "fn.stock"
+     ]
+    ],
+    [
+     "fn",
+     "bc",
+     "e16",
+     1,
+     "Lettura dall'API custom giacenze",
+     [
+      "bc.api",
+      "fn.stock"
+     ]
+    ],
+    [
+     "fn",
+     "sql",
+     "e13",
+     1,
+     "Aggiornamento della giacenza",
+     [
+      "fn.stock"
+     ]
+    ],
+    [
+     "api",
+     "sql",
+     "e10",
+     1,
+     "Il carrello legge la giacenza",
+     [
+      "api.cart"
+     ]
+    ]
+   ]
+  },
+  {
+   "id": "f3",
+   "g": "Percorso di un ordine",
+   "t": "Login o registrazione",
+   "w": "Entra External ID",
+   "note": "API Management valida il JWT con le chiavi pubbliche di External ID prima di inoltrare la chiamata.",
+   "h": [
+    [
+     "browser",
+     "ext",
+     "e1",
+     1,
+     "Login OIDC (authorization code + PKCE)"
+    ],
+    [
+     "ext",
+     "browser",
+     "e1",
+     -1,
+     "Emissione del JWT del cliente"
+    ],
+    [
+     "store",
+     "apim",
+     "e5",
+     1,
+     "Chiamata con JWT e subscription key"
+    ],
+    [
+     "apim",
+     "ext",
+     null,
+     1,
+     "Validazione del JWT con le chiavi JWKS"
+    ]
+   ]
+  },
+  {
+   "id": "f4",
+   "g": "Percorso di un ordine",
+   "t": "Pagamento",
+   "w": "Stripe",
+   "note": "L'API non tratta mai i dati della carta: restano su Stripe.",
+   "h": [
+    [
+     "store",
+     "apim",
+     "e5",
+     1,
+     "Avvio del checkout"
+    ],
+    [
+     "apim",
+     "api",
+     "e6",
+     1,
+     "Inoltro al modulo checkout",
+     [
+      "api.chk"
+     ]
+    ],
+    [
+     "api",
+     "stripe",
+     "e8",
+     1,
+     "Creazione del pagamento",
+     [
+      "api.chk"
+     ]
+    ],
+    [
+     "browser",
+     "stripe",
+     null,
+     1,
+     "Carta, Apple Pay o Google Pay su Stripe"
+    ]
+   ]
+  },
+  {
+   "id": "f5",
+   "g": "Percorso di un ordine",
+   "t": "Conferma del pagamento",
+   "w": "API e-commerce, modulo checkout",
+   "note": "Lo stato passa a pagato solo sul webhook firmato, non sul ritorno del browser, che può non arrivare.",
+   "h": [
+    [
+     "stripe",
+     "apim",
+     "e7",
+     1,
+     "Webhook di pagamento firmato"
+    ],
+    [
+     "apim",
+     "api",
+     "e6",
+     1,
+     "Inoltro al checkout",
+     [
+      "api.chk"
+     ]
+    ],
+    [
+     "api",
+     "sql",
+     "e10",
+     1,
+     "Ordine in stato pagato",
+     [
+      "api.chk"
+     ]
+    ],
+    [
+     "api",
+     "sb",
+     "e11",
+     1,
+     "Messaggio ordine pagato",
+     [
+      "api.chk"
+     ]
+    ],
+    [
+     "api",
+     "sendgrid",
+     "e9",
+     1,
+     "Email di conferma ordine",
+     [
+      "api.chk"
+     ]
+    ]
+   ]
+  },
+  {
+   "id": "f6",
+   "g": "Percorso di un ordine",
+   "t": "Ordine in Business Central",
+   "w": "Function invio ordini",
+   "note": "Se Business Central non risponde il messaggio resta in coda e viene ritentato, senza perdere l'ordine.",
+   "h": [
+    [
+     "sb",
+     "fn",
+     "e12",
+     -1,
+     "Lettura del messaggio ordine pagato",
+     [
+      "fn.ord"
+     ]
+    ],
+    [
+     "fn",
+     "bc",
+     "e16",
+     1,
+     "Creazione dell'ordine di vendita",
+     [
+      "fn.ord"
+     ]
+    ]
+   ]
+  },
+  {
+   "id": "f7",
+   "g": "Percorso di un ordine",
+   "t": "Preparazione e spedizione",
+   "w": "Magazzino, Business Central",
+   "note": "Il magazzino lavora come oggi; l'etichetta BRT viene generata da Business Central all'evasione.",
+   "h": [
+    [
+     "barcode",
+     "bc",
+     "e19",
+     1,
+     "Evasione con i lettori barcode"
+    ],
+    [
+     "bc",
+     "brt",
+     "e17",
+     1,
+     "Generazione dell'etichetta BRT",
+     [
+      "bc.brt"
+     ]
+    ]
+   ]
+  },
+  {
+   "id": "f8",
+   "g": "Percorso di un ordine",
+   "t": "Email con il tracking",
+   "w": "Function stato spedizione",
+   "note": "L'invio dell'email resta nell'API, così tutte le email al cliente partono da un solo componente.",
+   "h": [
+    [
+     "fn",
+     "bc",
+     "e16",
+     1,
+     "Lettura del numero di spedizione",
+     [
+      "fn.ship"
+     ]
+    ],
+    [
+     "fn",
+     "brt",
+     "e15",
+     1,
+     "Lettura del tracking",
+     [
+      "fn.ship"
+     ]
+    ],
+    [
+     "fn",
+     "sb",
+     "e12",
+     1,
+     "Messaggio ordine spedito",
+     [
+      "fn.ship"
+     ]
+    ],
+    [
+     "sb",
+     "api",
+     "e11",
+     -1,
+     "L'API riceve ordine spedito"
+    ],
+    [
+     "api",
+     "sendgrid",
+     "e9",
+     1,
+     "Email con il tracking"
+    ]
+   ]
+  },
+  {
+   "id": "f9",
+   "g": "Percorso di un ordine",
+   "t": "Fattura elettronica",
+   "w": "Business Central, Fatture in Cloud",
+   "note": "Flusso già in uso, invariato.",
+   "h": [
+    [
+     "bc",
+     "fic",
+     "e18",
+     1,
+     "Invio della fattura",
+     [
+      "bc.fic"
+     ]
+    ],
+    [
+     "fic",
+     "SDI",
+     null,
+     1,
+     "Trasmissione allo SDI"
+    ]
+   ]
+  },
+  {
+   "id": "f10",
+   "g": "Percorso di un ordine",
+   "t": "Consegna e chiusura",
+   "w": "Function stato spedizione, area cliente",
+   "note": "Il cliente vede l'ordine consegnato nell'area cliente.",
+   "h": [
+    [
+     "fn",
+     "brt",
+     "e15",
+     1,
+     "Stato consegnato da BRT",
+     [
+      "fn.ship"
+     ]
+    ],
+    [
+     "fn",
+     "sql",
+     "e13",
+     1,
+     "Aggiornamento dello stato ordine",
+     [
+      "fn.ship"
+     ]
+    ],
+    [
+     "store",
+     "apim",
+     "e5",
+     1,
+     "Il cliente apre l'area cliente"
+    ],
+    [
+     "apim",
+     "api",
+     "e6",
+     1,
+     "Inoltro all'area cliente",
+     [
+      "api.area"
+     ]
+    ],
+    [
+     "api",
+     "sql",
+     "e10",
+     1,
+     "Lettura degli ordini",
+     [
+      "api.area"
+     ]
+    ]
+   ]
+  },
+  {
+   "id": "f11",
+   "g": "Integrazioni pianificate",
+   "t": "Sincronizzazione del catalogo",
+   "w": "Function sync catalogo, ogni 15 minuti",
+   "note": "Articoli, prezzi e immagini passano da Business Central al sito senza intervento manuale.",
+   "h": [
+    [
+     "fn",
+     "bc",
+     "e16",
+     1,
+     "Lettura di articoli e prezzi",
+     [
+      "fn.cat"
+     ]
+    ],
+    [
+     "fn",
+     "sql",
+     "e13",
+     1,
+     "Scrittura del catalogo",
+     [
+      "fn.cat"
+     ]
+    ],
+    [
+     "fn",
+     "blob",
+     "e14",
+     1,
+     "Caricamento delle immagini prodotto",
+     [
+      "fn.cat"
+     ]
+    ]
+   ]
+  }
+ ],
+ "technologies": [
+  {
+   "id": "next",
+   "g": "Framework e protocolli",
+   "n": "Next.js",
+   "icon": "next",
+   "e": [
+    "store"
+   ],
+   "d": "Framework dello storefront: pagine e sessione del cliente, ospitato su App Service."
+  },
+  {
+   "id": "dotnet",
+   "g": "Framework e protocolli",
+   "n": ".NET 8",
+   "icon": "dotnet",
+   "e": [
+    "api"
+   ],
+   "d": "Runtime dell'API e-commerce: catalogo, carrello, checkout, area cliente."
+  },
+  {
+   "id": "oidc",
+   "g": "Framework e protocolli",
+   "n": "OIDC e OAuth 2.0",
+   "mono": "JWT",
+   "e": [
+    "browser",
+    "ext",
+    "store",
+    "apim",
+    "fn",
+    "bc"
+   ],
+   "d": "Login dei clienti con authorization code + PKCE; client credentials tra Functions e Business Central."
+  },
+  {
+   "id": "webhook",
+   "g": "Framework e protocolli",
+   "n": "Webhook",
+   "mono": "HOOK",
+   "e": [
+    "stripe",
+    "apim",
+    "api",
+    "bc",
+    "fn"
+   ],
+   "d": "Pagamento confermato da Stripe con firma HMAC; variazione giacenze da Business Central con function key e clientState."
+  },
+  {
+   "id": "app",
+   "g": "Microsoft Azure",
+   "n": "Azure App Service",
+   "icon": "app",
+   "e": [
+    "store",
+    "api"
+   ],
+   "d": "Un App Service plan con due App Service: storefront Next.js e API .NET 8."
+  },
+  {
+   "id": "apim",
+   "g": "Microsoft Azure",
+   "n": "Azure API Management",
+   "icon": "apim",
+   "e": [
+    "apim"
+   ],
+   "d": "Gateway davanti all'API: validazione JWT, subscription key, ingresso del webhook Stripe."
+  },
+  {
+   "id": "sql",
+   "g": "Microsoft Azure",
+   "n": "Azure SQL Database",
+   "icon": "sql",
+   "e": [
+    "sql"
+   ],
+   "d": "Catalogo, carrelli e ordini, con private endpoint."
+  },
+  {
+   "id": "sb",
+   "g": "Microsoft Azure",
+   "n": "Azure Service Bus",
+   "icon": "sb",
+   "e": [
+    "sb"
+   ],
+   "d": "Topic ordini (ordine pagato, ordine spedito); tier Premium per il private endpoint."
+  },
+  {
+   "id": "func",
+   "g": "Microsoft Azure",
+   "n": "Azure Functions",
+   "icon": "func",
+   "e": [
+    "fn"
+   ],
+   "d": "Sync catalogo, sync giacenze, invio ordini, stato spedizione, con integrazione VNet."
+  },
+  {
+   "id": "blob",
+   "g": "Microsoft Azure",
+   "n": "Azure Blob Storage",
+   "icon": "blob",
+   "e": [
+    "blob"
+   ],
+   "d": "Immagini prodotto e storage di servizio delle Functions."
+  },
+  {
+   "id": "kv",
+   "g": "Microsoft Azure",
+   "n": "Azure Key Vault",
+   "icon": "kv",
+   "e": [
+    "kv"
+   ],
+   "d": "Segreti di Stripe, SendGrid, BRT, Business Central e function key, uno per ambiente."
+  },
+  {
+   "id": "ai",
+   "g": "Microsoft Azure",
+   "n": "Application Insights e Log Analytics",
+   "icon": "ai",
+   "e": [
+    "ai"
+   ],
+   "d": "Log, metriche e tracciamento delle chiamate tra componenti."
+  },
+  {
+   "id": "vnet",
+   "g": "Microsoft Azure",
+   "n": "VNet e private endpoint",
+   "icon": "vnet",
+   "e": [
+    "sb",
+    "sql",
+    "fn",
+    "store",
+    "api"
+   ],
+   "d": "Integrazione di rete di App Service e Functions, private endpoint di SQL e Service Bus."
+  },
+  {
+   "id": "ext",
+   "g": "Microsoft Entra e Dynamics",
+   "n": "Microsoft Entra External ID",
+   "icon": "ext",
+   "e": [
+    "ext"
+   ],
+   "d": "Tenant esterno per l'identità dei clienti, separato dalle identità dei dipendenti."
+  },
+  {
+   "id": "entra",
+   "g": "Microsoft Entra e Dynamics",
+   "n": "Microsoft Entra ID",
+   "icon": "entra",
+   "e": [
+    "entra",
+    "bc"
+   ],
+   "d": "Identità dei dipendenti, app registration per Business Central, gruppi PIM con MFA."
+  },
+  {
+   "id": "bc",
+   "g": "Microsoft Entra e Dynamics",
+   "n": "Dynamics 365 Business Central",
+   "icon": "bc",
+   "e": [
+    "bc",
+    "barcode"
+   ],
+   "d": "ERP SaaS con ambienti sandbox e produzione; esteso con API custom, integrazione BRT e webhook subscription."
+  },
+  {
+   "id": "cloudflare",
+   "g": "Servizi esterni",
+   "n": "Cloudflare",
+   "icon": "cloudflare",
+   "e": [
+    "cdn"
+   ],
+   "d": "DNS, certificato e CDN; ospita anche i record SPF e DKIM di SendGrid."
+  },
+  {
+   "id": "stripe",
+   "g": "Servizi esterni",
+   "n": "Stripe",
+   "icon": "stripe",
+   "e": [
+    "stripe",
+    "api"
+   ],
+   "d": "Pagamenti con modalità test e live; secret key e chiave di firma del webhook in Key Vault."
+  },
+  {
+   "id": "sendgrid",
+   "g": "Servizi esterni",
+   "n": "SendGrid",
+   "icon": "sendgrid",
+   "e": [
+    "sendgrid",
+    "api"
+   ],
+   "d": "Email transazionali con dominio mittente autenticato."
+  },
+  {
+   "id": "brt",
+   "g": "Servizi esterni",
+   "n": "API BRT",
+   "mono": "BRT",
+   "e": [
+    "brt",
+    "fn",
+    "bc"
+   ],
+   "d": "Tracking dalle Functions ed etichette da Business Central."
+  },
+  {
+   "id": "fic",
+   "g": "Servizi esterni",
+   "n": "Fatture in Cloud",
+   "mono": "FiC",
+   "e": [
+    "fic",
+    "bc"
+   ],
+   "d": "Fattura elettronica verso SDI, collegamento esistente con Business Central."
+  }
+ ],
+ "authKinds": {
+  "mi": "Identità gestita",
+  "tok": "Token OAuth / OIDC",
+  "sec": "Segreto conservato",
+  "per": "Identità persona"
+ },
+ "auth": [
+  [
+   1,
+   "per",
+   "browser",
+   [
+    "ext"
+   ],
+   "Login OIDC (authorization code + PKCE)",
+   "account del cliente in External ID"
+  ],
+  [
+   2,
+   "tok",
+   "store",
+   [
+    "apim"
+   ],
+   "Subscription key + JWT del cliente",
+   "subscription key nelle app settings con riferimento a Key Vault; JWT nella sessione"
+  ],
+  [
+   3,
+   "tok",
+   "apim",
+   [
+    "ext"
+   ],
+   "Lettura delle chiavi pubbliche (JWKS) per validare il JWT",
+   "nessuna, le chiavi sono pubbliche"
+  ],
+  [
+   4,
+   "tok",
+   "apim",
+   [
+    "api"
+   ],
+   "JWT inoltrato; l'App Service accetta traffico solo da API Management",
+   "nessuna"
+  ],
+  [
+   5,
+   "sec",
+   "api",
+   [
+    "stripe"
+   ],
+   "Secret key",
+   "Key Vault"
+  ],
+  [
+   6,
+   "sec",
+   "stripe",
+   [
+    "apim"
+   ],
+   "Firma HMAC del webhook, verificata dall'API",
+   "chiave di firma in Key Vault"
+  ],
+  [
+   7,
+   "sec",
+   "api",
+   [
+    "sendgrid"
+   ],
+   "API key",
+   "Key Vault"
+  ],
+  [
+   8,
+   "mi",
+   "api",
+   [
+    "sql",
+    "sb",
+    "blob",
+    "kv"
+   ],
+   "Identità gestita assegnata dal sistema + ruoli RBAC",
+   "nessuna da conservare"
+  ],
+  [
+   9,
+   "mi",
+   "fn",
+   [
+    "sql",
+    "sb",
+    "blob",
+    "kv"
+   ],
+   "Identità gestita assegnata dal sistema + ruoli RBAC",
+   "nessuna da conservare"
+  ],
+  [
+   10,
+   "tok",
+   "fn",
+   [
+    "bc"
+   ],
+   "OAuth 2.0 client credentials, app registration in Entra ID aziendale",
+   "client secret in Key Vault, rotazione ogni 12 mesi"
+  ],
+  [
+   11,
+   "sec",
+   "bc",
+   [
+    "fn"
+   ],
+   "Webhook giacenze: function key + clientState della subscription",
+   "Key Vault"
+  ],
+  [
+   12,
+   "sec",
+   "fn",
+   [
+    "brt"
+   ],
+   "Utente e password API",
+   "Key Vault"
+  ],
+  [
+   13,
+   "sec",
+   "bc",
+   [
+    "brt"
+   ],
+   "Utente e password API",
+   "configurazione di Business Central"
+  ],
+  [
+   14,
+   "sec",
+   "bc",
+   [
+    "fic"
+   ],
+   "Collegamento esistente",
+   "configurazione di Business Central"
+  ],
+  [
+   15,
+   "per",
+   "Amministratori",
+   [
+    "entra"
+   ],
+   "Utenti Entra ID, MFA obbligatoria, PIM per i ruoli privilegiati",
+   "identità della persona"
+  ]
+ ]
+}

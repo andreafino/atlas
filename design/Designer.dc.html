@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="it"><head>
+<title>Designer architettura</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap">
+<style>
+html,body{margin:0;padding:0;background:var(--paper,#FBFAF8)}
+*{box-sizing:border-box}
+a{color:var(--accent-ink,#B35A07)}a:hover{color:var(--accent,#F08019)}
+button{font:inherit;color:inherit}
+@keyframes eosFlow{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
+@keyframes eosFlowRev{from{stroke-dashoffset:0}to{stroke-dashoffset:24}}
+@keyframes eosPulse{0%,100%{opacity:.16}50%{opacity:.34}}
+</style>
+</helmet>
+<div style="height:{{ rootH }};display:grid;grid-template-rows:auto minmax(0,1fr);background:var(--paper,#FBFAF8);color:var(--ink,#382F2D);font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.45">
+  <header style="display:flex;align-items:center;gap:20px;padding:14px 24px;border-bottom:3px solid var(--accent,#F08019);background:var(--paper,#FBFAF8)">
+    <div aria-label="EOS Solutions" style="display:flex;align-items:baseline;gap:6px;flex:none;font-family:'Barlow Semi Condensed',sans-serif;line-height:1"><span style="font-weight:700;font-size:30px;letter-spacing:.02em;color:var(--accent,#F08019)">EOS</span><span style="font-weight:600;font-size:18px;color:var(--ink,#382F2D)">Solutions</span></div>
+    <div style="width:1px;align-self:stretch;background:var(--rule,#E2DCD6)"></div>
+    <div style="display:grid;gap:2px;min-width:0;flex:1">
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink,#B35A07)">Architettura infrastrutturale · versione 1 · 30 settembre 2026</div>
+      <h1 style="margin:0;font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:24px;line-height:1.15;text-wrap:balance">E-commerce B2C integrato con Business Central</h1>
+    </div>
+    <div style="display:flex;gap:2px;padding:3px;border-radius:8px;background:var(--panel,#F3F0EC);flex:none">
+      <sc-for list="{{ themes }}" as="th" hint-placeholder-count="2">
+        <sc-if value="{{ th.active }}" hint-placeholder-val="{{ false }}">
+          <button sc-camel-on-click="{{ th.onClick }}" style="border:0;border-radius:6px;padding:5px 12px;font-size:13px;font-weight:600;background:var(--card,#FFFFFF);color:var(--ink,#382F2D);cursor:pointer;box-shadow:0 1px 2px rgba(56,47,45,.15)">{{ th.label }}</button>
+        </sc-if>
+        <sc-if value="{{ th.inactive }}" hint-placeholder-val="{{ true }}">
+          <button sc-camel-on-click="{{ th.onClick }}" style="border:0;border-radius:6px;padding:5px 12px;font-size:13px;background:transparent;color:var(--muted,#76696A);cursor:pointer">{{ th.label }}</button>
+        </sc-if>
+      </sc-for>
+    </div>
+  </header>
+  <div style="display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);min-height:0">
+    <aside style="display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--rule,#E2DCD6);background:var(--panel,#F3F0EC)">
+      <div style="display:flex;gap:0;padding:0 16px;border-bottom:1px solid var(--rule,#E2DCD6)">
+        <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="3">
+          <sc-if value="{{ tb.active }}" hint-placeholder-val="{{ false }}">
+            <button sc-camel-on-click="{{ tb.onClick }}" style="flex:1;border:0;background:transparent;padding:14px 4px 11px;border-bottom:3px solid var(--accent,#F08019);font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink,#382F2D);cursor:pointer;display:flex;justify-content:center;gap:6px">{{ tb.label }}<span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-ink,#B35A07);padding-top:2px">{{ tb.count }}</span></button>
+          </sc-if>
+          <sc-if value="{{ tb.inactive }}" hint-placeholder-val="{{ true }}">
+            <button sc-camel-on-click="{{ tb.onClick }}" style="flex:1;border:0;background:transparent;padding:14px 4px 11px;border-bottom:3px solid transparent;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#76696A);cursor:pointer;display:flex;justify-content:center;gap:6px">{{ tb.label }}<span style="font-family:'JetBrains Mono',monospace;font-size:11px;padding-top:2px">{{ tb.count }}</span></button>
+          </sc-if>
+        </sc-for>
+      </div>
+      <div style="flex:1;min-height:0;overflow-y:auto;padding:8px 12px 24px">
+        <sc-if value="{{ isFlows }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ flowGroups }}" as="g" hint-placeholder-count="1">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#76696A);padding:14px 6px 6px">{{ g.name }}</div>
+            <div style="display:grid;gap:4px">
+              <sc-for list="{{ g.items }}" as="f" hint-placeholder-count="6">
+                <sc-if value="{{ f.inactive }}" hint-placeholder-val="{{ true }}">
+                  <button sc-camel-on-click="{{ f.onClick }}" style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;align-items:start;text-align:left;border:1px solid transparent;border-radius:8px;padding:9px 10px;background:transparent;cursor:pointer" style-hover="background:var(--card,#FFFFFF);border-color:var(--rule,#E2DCD6)">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--accent-ink,#B35A07);border:1.5px solid var(--rule,#E2DCD6);border-radius:6px;height:26px;display:grid;place-items:center">{{ f.num }}</span>
+                    <span style="display:grid;gap:1px;min-width:0"><span style="font-weight:600;font-size:15px">{{ f.title }}</span><span style="font-size:13px;color:var(--muted,#76696A)">{{ f.where }}</span></span>
+                  </button>
+                </sc-if>
+                <sc-if value="{{ f.active }}" hint-placeholder-val="{{ false }}">
+                  <div style="border:1px solid var(--accent,#F08019);border-radius:8px;background:var(--card,#FFFFFF);overflow:hidden">
+                    <button sc-camel-on-click="{{ f.onClick }}" style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;align-items:start;text-align:left;border:0;padding:10px 10px 8px;background:transparent;cursor:pointer;width:100%">
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:#FFFFFF;background:var(--accent,#F08019);border-radius:6px;height:26px;display:grid;place-items:center">{{ f.num }}</span>
+                      <span style="display:grid;gap:1px;min-width:0"><span style="font-weight:700;font-size:15px">{{ f.title }}</span><span style="font-size:13px;color:var(--muted,#76696A)">{{ f.where }}</span></span>
+                    </button>
+                    <div style="padding:0 12px 12px;display:grid;gap:10px">
+                      <p style="margin:0;font-size:13.5px;color:var(--muted,#76696A);text-wrap:pretty">{{ f.note }}</p>
+                      <div style="display:flex;align-items:center;gap:6px">
+                        <button sc-camel-on-click="{{ prevHop }}" title="Passo precedente" style="width:34px;height:32px;border:1px solid var(--rule,#E2DCD6);border-radius:6px;background:var(--paper,#FBFAF8);cursor:pointer;font-size:16px;line-height:1">‹</button>
+                        <button sc-camel-on-click="{{ togglePlay }}" style="flex:1;height:32px;border:0;border-radius:6px;background:var(--ink,#382F2D);color:var(--paper,#FBFAF8);cursor:pointer;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase">{{ playLabel }}</button>
+                        <button sc-camel-on-click="{{ nextHop }}" title="Passo successivo" style="width:34px;height:32px;border:1px solid var(--rule,#E2DCD6);border-radius:6px;background:var(--paper,#FBFAF8);cursor:pointer;font-size:16px;line-height:1">›</button>
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted,#76696A);min-width:38px;text-align:right">{{ hopCounter }}</span>
+                      </div>
+                      <div style="height:3px;background:var(--rule,#E2DCD6);border-radius:2px;overflow:hidden"><div style="height:100%;background:var(--accent,#F08019);width:{{ progressPct }};transition:width .35s ease"></div></div>
+                      <ol style="list-style:none;margin:0;padding:0;display:grid;gap:2px">
+                        <sc-for list="{{ f.hops }}" as="hp" hint-placeholder-count="4">
+                          <sc-if value="{{ hp.cur }}" hint-placeholder-val="{{ false }}">
+                            <li><button sc-camel-on-click="{{ hp.onClick }}" style="width:100%;display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;text-align:left;border:0;border-radius:6px;padding:7px 8px;background:var(--accent-soft,#FDEBD9);cursor:pointer">
+                              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:#FFFFFF;background:var(--accent,#F08019);border-radius:50%;width:20px;height:20px;display:grid;place-items:center">{{ hp.n }}</span>
+                              <span style="display:grid;gap:1px;min-width:0"><span style="font-size:13.5px;font-weight:600">{{ hp.label }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--accent-ink,#B35A07)">{{ hp.route }}</span></span>
+                            </button></li>
+                          </sc-if>
+                          <sc-if value="{{ hp.notCur }}" hint-placeholder-val="{{ true }}">
+                            <li><button sc-camel-on-click="{{ hp.onClick }}" style="width:100%;display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;text-align:left;border:0;border-radius:6px;padding:7px 8px;background:transparent;cursor:pointer" style-hover="background:var(--panel,#F3F0EC)">
+                              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted,#76696A);border:1px solid var(--rule,#E2DCD6);border-radius:50%;width:20px;height:20px;display:grid;place-items:center">{{ hp.n }}</span>
+                              <span style="display:grid;gap:1px;min-width:0"><span style="font-size:13.5px">{{ hp.label }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted,#76696A)">{{ hp.route }}</span></span>
+                            </button></li>
+                          </sc-if>
+                        </sc-for>
+                      </ol>
+                    </div>
+                  </div>
+                </sc-if>
+              </sc-for>
+            </div>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ isEntities }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ entityGroups }}" as="g" hint-placeholder-count="1">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#76696A);padding:14px 6px 6px">{{ g.name }}</div>
+            <div style="display:grid;gap:4px">
+              <sc-for list="{{ g.items }}" as="e" hint-placeholder-count="3">
+                <sc-if value="{{ e.inactive }}" hint-placeholder-val="{{ true }}">
+                  <button sc-camel-on-click="{{ e.onClick }}" style="display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center;text-align:left;border:1px solid transparent;border-radius:8px;padding:8px 10px;background:transparent;cursor:pointer" style-hover="background:var(--card,#FFFFFF);border-color:var(--rule,#E2DCD6)">
+                    <sc-if value="{{ e.icon }}" hint-placeholder-val="{{ false }}"><img src="{{ e.icon }}" alt="" style="width:28px;height:28px;display:block"></sc-if>
+                    <sc-if value="{{ e.noIcon }}" hint-placeholder-val="{{ false }}"><span style="width:28px;height:28px;border-radius:6px;background:var(--card,#FFFFFF);border:1px solid var(--rule,#E2DCD6);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500">{{ e.mono }}</span></sc-if>
+                    <span style="display:grid;gap:0;min-width:0"><span style="font-weight:600">{{ e.name }}</span><span style="font-size:13px;color:var(--muted,#76696A)">{{ e.sub }}</span></span>
+                  </button>
+                </sc-if>
+                <sc-if value="{{ e.active }}" hint-placeholder-val="{{ false }}">
+                  <div style="border:1px solid var(--accent,#F08019);border-radius:8px;background:var(--card,#FFFFFF);padding:12px;display:grid;gap:12px">
+                    <button sc-camel-on-click="{{ e.onClick }}" style="display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;align-items:center;text-align:left;border:0;padding:0;background:transparent;cursor:pointer">
+                      <sc-if value="{{ e.icon }}" hint-placeholder-val="{{ false }}"><img src="{{ e.icon }}" alt="" style="width:40px;height:40px;display:block"></sc-if>
+                      <sc-if value="{{ e.noIcon }}" hint-placeholder-val="{{ false }}"><span style="width:40px;height:40px;border-radius:8px;background:var(--panel,#F3F0EC);border:1px solid var(--rule,#E2DCD6);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500">{{ e.mono }}</span></sc-if>
+                      <span style="display:grid;gap:0;min-width:0"><span style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:19px;line-height:1.15">{{ e.name }}</span><span style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-ink,#B35A07);font-family:'Barlow Semi Condensed',sans-serif;font-weight:600">{{ e.band }}</span></span>
+                    </button>
+                    <p style="margin:0;font-size:14px;text-wrap:pretty">{{ e.desc }}</p>
+                    <sc-if value="{{ e.hasModules }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:grid;gap:6px">
+                        <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#76696A)">Moduli</div>
+                        <sc-for list="{{ e.modules }}" as="m" hint-placeholder-count="3">
+                          <div style="display:grid;gap:0;padding:6px 10px;border:1px solid var(--rule,#E2DCD6);border-radius:6px;background:var(--paper,#FBFAF8)"><span style="font-weight:600;font-size:13.5px">{{ m.t }}</span><span style="font-size:12.5px;color:var(--muted,#76696A)">{{ m.s }}</span></div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ e.hasTechs }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:grid;gap:6px">
+                        <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#76696A)">Tecnologie</div>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px">
+                          <sc-for list="{{ e.techs }}" as="t" hint-placeholder-count="2">
+                            <button sc-camel-on-click="{{ t.onClick }}" style="border:1px solid var(--rule,#E2DCD6);border-radius:999px;padding:3px 10px;font-size:12.5px;background:var(--paper,#FBFAF8);cursor:pointer" style-hover="border-color:var(--accent,#F08019)">{{ t.name }}</button>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ e.hasFlows }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:grid;gap:6px">
+                        <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#76696A)">Flussi che la attraversano</div>
+                        <div style="display:grid;gap:2px">
+                          <sc-for list="{{ e.flows }}" as="fl" hint-placeholder-count="2">
+                            <button sc-camel-on-click="{{ fl.onClick }}" style="display:flex;gap:8px;align-items:baseline;text-align:left;border:0;border-radius:6px;padding:5px 6px;background:transparent;cursor:pointer;font-size:13.5px" style-hover="background:var(--panel,#F3F0EC)"><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--accent-ink,#B35A07)">{{ fl.num }}</span>{{ fl.title }}</button>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ e.hasAuth }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:grid;gap:6px">
+                        <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#76696A)">Autenticazione</div>
+                        <sc-for list="{{ e.auth }}" as="au" hint-placeholder-count="2">
+                          <div style="display:grid;gap:2px;padding:7px 10px;border-radius:6px;background:var(--paper,#FBFAF8);border:1px solid var(--rule,#E2DCD6)">
+                            <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><span style="font-weight:600;font-size:13px">{{ au.route }}</span><span style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-ink,#B35A07);white-space:nowrap">{{ au.kind }}</span></div>
+                            <span style="font-size:13px">{{ au.mech }}</span>
+                            <span style="font-size:12.5px;color:var(--muted,#76696A)">Credenziale: {{ au.cred }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </sc-for>
+            </div>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ isTechs }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ techGroups }}" as="g" hint-placeholder-count="1">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#76696A);padding:14px 6px 6px">{{ g.name }}</div>
+            <div style="display:grid;gap:4px">
+              <sc-for list="{{ g.items }}" as="t" hint-placeholder-count="3">
+                <sc-if value="{{ t.inactive }}" hint-placeholder-val="{{ true }}">
+                  <button sc-camel-on-click="{{ t.onClick }}" style="display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center;text-align:left;border:1px solid transparent;border-radius:8px;padding:8px 10px;background:transparent;cursor:pointer" style-hover="background:var(--card,#FFFFFF);border-color:var(--rule,#E2DCD6)">
+                    <sc-if value="{{ t.icon }}" hint-placeholder-val="{{ false }}"><img src="{{ t.icon }}" alt="" style="width:26px;height:26px;display:block"></sc-if>
+                    <sc-if value="{{ t.noIcon }}" hint-placeholder-val="{{ false }}"><span style="width:26px;height:26px;border-radius:6px;background:var(--card,#FFFFFF);border:1px solid var(--rule,#E2DCD6);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500">{{ t.mono }}</span></sc-if>
+                    <span style="display:grid;min-width:0"><span style="font-weight:600">{{ t.name }}</span><span style="font-size:13px;color:var(--muted,#76696A)">{{ t.usedBy }}</span></span>
+                  </button>
+                </sc-if>
+                <sc-if value="{{ t.active }}" hint-placeholder-val="{{ false }}">
+                  <div style="border:1px solid var(--accent,#F08019);border-radius:8px;background:var(--card,#FFFFFF);padding:12px;display:grid;gap:10px">
+                    <button sc-camel-on-click="{{ t.onClick }}" style="display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:center;text-align:left;border:0;padding:0;background:transparent;cursor:pointer">
+                      <sc-if value="{{ t.icon }}" hint-placeholder-val="{{ false }}"><img src="{{ t.icon }}" alt="" style="width:36px;height:36px;display:block"></sc-if>
+                      <sc-if value="{{ t.noIcon }}" hint-placeholder-val="{{ false }}"><span style="width:36px;height:36px;border-radius:8px;background:var(--panel,#F3F0EC);border:1px solid var(--rule,#E2DCD6);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500">{{ t.mono }}</span></sc-if>
+                      <span style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:18px;line-height:1.15">{{ t.name }}</span>
+                    </button>
+                    <p style="margin:0;font-size:14px;text-wrap:pretty">{{ t.desc }}</p>
+                    <div style="display:grid;gap:6px">
+                      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#76696A)">Usata da</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:6px">
+                        <sc-for list="{{ t.ents }}" as="en" hint-placeholder-count="2">
+                          <button sc-camel-on-click="{{ en.onClick }}" style="border:1px solid var(--rule,#E2DCD6);border-radius:999px;padding:3px 10px;font-size:12.5px;background:var(--paper,#FBFAF8);cursor:pointer" style-hover="border-color:var(--accent,#F08019)">{{ en.name }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </div>
+                </sc-if>
+              </sc-for>
+            </div>
+          </sc-for>
+        </sc-if>
+      </div>
+    </aside>
+    <main style="display:flex;flex-direction:column;min-width:0;min-height:0">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;padding:10px 20px;border-bottom:1px solid var(--rule,#E2DCD6)">
+        <div style="flex:1;min-width:260px;display:grid;gap:1px">
+          <span style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink,#B35A07)">{{ statusKicker }}</span>
+          <span style="font-size:15px;font-weight:600">{{ statusText }}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;font-size:12.5px;color:var(--muted,#76696A)">
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:26px;height:0;border-top:3px dotted var(--accent,#F08019)"></span>direzione del dato</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="font-size:14px;line-height:1;color:var(--edge,#A89A94)">→</span>direzione della chiamata</span>
+        </div>
+        <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+          <button sc-camel-on-click="{{ clearSel }}" style="border:1px solid var(--rule,#E2DCD6);border-radius:6px;padding:5px 12px;font-size:13px;background:var(--card,#FFFFFF);cursor:pointer">Azzera</button>
+        </sc-if>
+        <div style="display:flex;gap:2px;padding:3px;border-radius:8px;background:var(--panel,#F3F0EC)">
+          <button sc-camel-on-click="{{ zoomOut }}" title="Riduci" style="border:0;border-radius:6px;width:28px;height:26px;font-size:16px;line-height:1;background:transparent;cursor:pointer" style-hover="background:var(--card,#FFFFFF)">−</button>
+          <button sc-camel-on-click="{{ zoomFit }}" title="Adatta allo spazio" style="border:0;border-radius:6px;min-width:52px;height:26px;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--card,#FFFFFF);cursor:pointer">{{ zoomLabel }}</button>
+          <button sc-camel-on-click="{{ zoomIn }}" title="Ingrandisci" style="border:0;border-radius:6px;width:28px;height:26px;font-size:16px;line-height:1;background:transparent;cursor:pointer" style-hover="background:var(--card,#FFFFFF)">+</button>
+        </div>
+      </div>
+      <div ref="{{ vpRef }}" sc-camel-on-pointer-down="{{ onPD }}" sc-camel-on-pointer-move="{{ onPM }}" sc-camel-on-pointer-up="{{ onPU }}" sc-camel-on-pointer-cancel="{{ onPU }}" sc-camel-on-click-capture="{{ onCC }}" style="flex:1;min-height:0;overflow:hidden;position:relative;cursor:grab;touch-action:none;user-select:none">
+        <div ref="{{ stageRef }}" style="position:absolute;left:0;top:0;width:1460px;height:1660px;transform-origin:0 0;will-change:transform">{{ diagram }}</div>
+        <div style="position:absolute;left:16px;bottom:12px;font-size:12px;color:var(--muted,#76696A);background:var(--paper,#FBFAF8);border:1px solid var(--rule,#E2DCD6);border-radius:6px;padding:4px 10px;pointer-events:none">Rotella: zoom · rotella premuta o trascina: sposta · clic sulla % per adattare</div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;stepMs&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:2200,&quot;min&quot;:800,&quot;max&quot;:6000,&quot;step&quot;:100,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Riproduzione&quot;},&quot;autoNext&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Riproduzione&quot;},&quot;frameHeight&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;dimOpacity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.22,&quot;min&quot;:0.05,&quot;max&quot;:0.6,&quot;step&quot;:0.01,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Evidenziazione&quot;}}">
+const IC = n => 'icons/' + n + '.svg';
+const BANDS = [
+  { l: 'TENANT EXTERNAL ID', x: 40, y: 40, w: 270, h: 140 },
+  { l: 'INTERNET', x: 320, y: 40, w: 560, h: 140 },
+  { l: 'SERVIZI ESTERNI', x: 1160, y: 40, w: 280, h: 1360 },
+  { l: 'SOTTOSCRIZIONE AZURE E-COMMERCE · WEST EUROPE', x: 40, y: 210, w: 1100, h: 960 },
+  { l: 'VNET · SUBNET PRIVATE', x: 50, y: 820, w: 830, h: 320 },
+  { l: 'TENANT ENTRA ID AZIENDALE', x: 40, y: 1200, w: 540, h: 280 },
+  { l: 'ON-PREMISE · MAGAZZINO', x: 40, y: 1510, w: 270, h: 130 }
+];
+const ENTS = [
+  { id: 'ext', n: 'Entra External ID', s: ['login clienti, OIDC', 'emette il JWT del cliente'], icon: 'ext', band: 'Tenant External ID', x: 60, y: 80, desc: 'Account dei clienti: registrazione e login, separati dalle identità dei dipendenti.' },
+  { id: 'browser', n: 'Browser cliente', s: ['desktop e mobile', 'sito responsive, nessuna app'], mono: 'WWW', band: 'Internet', x: 340, y: 80, desc: 'Il cliente usa il sito responsive da desktop e mobile; non è prevista un\'app nativa.' },
+  { id: 'cdn', n: 'Cloudflare', s: ['DNS e CDN del sito', 'cache delle immagini prodotto'], icon: 'cloudflare', band: 'Internet', x: 620, y: 80, desc: 'DNS, certificato e CDN davanti a storefront e immagini prodotto.' },
+  { id: 'kv', n: 'Azure Key Vault', s: ['segreti, uno per ambiente', 'letto con identità gestita'], icon: 'kv', band: 'Sottoscrizione Azure', x: 60, y: 260, desc: 'Tutti i segreti del progetto (Stripe, SendGrid, BRT, Business Central, function key), uno per ambiente.' },
+  { id: 'ai', n: 'Application Insights', s: ['+ Log Analytics workspace', 'telemetria app e Functions'], icon: 'ai', band: 'Sottoscrizione Azure', x: 340, y: 260, desc: 'Log, metriche e tracciamento delle chiamate tra componenti.' },
+  { id: 'store', n: 'Storefront', s: ['Next.js su App Service', 'pagine e sessione cliente'], icon: 'app', band: 'Sottoscrizione Azure', x: 620, y: 260, desc: 'Next.js su App Service: il sito che vede il cliente.' },
+  { id: 'blob', n: 'Blob Storage', s: ['immagini prodotto', 'origine della CDN Cloudflare'], icon: 'blob', band: 'Sottoscrizione Azure', x: 900, y: 260, desc: 'Immagini prodotto, origine della CDN Cloudflare; anche storage di servizio delle Functions.' },
+  { id: 'apim', n: 'API Management', s: ['valida JWT e subscription key', 'riceve il webhook Stripe'], icon: 'apim', band: 'Sottoscrizione Azure', x: 620, y: 390, desc: 'Valida JWT e subscription key davanti all\'API e riceve il webhook Stripe.' },
+  { id: 'api', n: 'API e-commerce', s: ['.NET 8 su App Service'], icon: 'app', band: 'Sottoscrizione Azure', x: 620, y: 520, h: 258, desc: '.NET 8 su App Service: catalogo, carrello, checkout, area cliente. Accetta traffico solo da API Management.',
+    mods: [{ id: 'api.cat', t: 'Catalogo', s: 'prodotti, prezzi, giacenze' }, { id: 'api.cart', t: 'Carrello', s: 'controllo giacenza' }, { id: 'api.chk', t: 'Checkout', s: 'pagamento Stripe, webhook' }, { id: 'api.area', t: 'Area cliente', s: 'ordini, stato spedizione' }] },
+  { id: 'sb', n: 'Service Bus', s: ['topic ordini', 'ordine pagato, ordine spedito'], icon: 'sb', band: 'VNet · subnet private', x: 340, y: 860, desc: 'Disaccoppia e-commerce ed ERP: gli ordini non si perdono se Business Central è fermo. Il private endpoint richiede il tier Premium.' },
+  { id: 'sql', n: 'Azure SQL Database', s: ['catalogo, carrelli, ordini', 'private endpoint'], icon: 'sql', band: 'VNet · subnet private', x: 620, y: 860, desc: 'Catalogo online, carrelli, ordini. Raggiungibile solo tramite private endpoint.' },
+  { id: 'fn', n: 'Azure Functions', s: ['integrazione ERP'], icon: 'func', band: 'VNet · subnet private', x: 60, y: 860, h: 258, desc: 'Le quattro integrazioni con Business Central e BRT; piano Flex Consumption o Premium per l\'integrazione di rete.',
+    mods: [{ id: 'fn.cat', t: 'Sync catalogo', s: 'BC → SQL e Blob, ogni 15 min' }, { id: 'fn.stock', t: 'Sync giacenze', s: 'su webhook di BC' }, { id: 'fn.ord', t: 'Invio ordini', s: 'Service Bus → BC' }, { id: 'fn.ship', t: 'Stato spedizione', s: 'BRT → SQL e Service Bus' }] },
+  { id: 'stripe', n: 'Stripe', s: ['carta, Apple Pay, Google Pay', 'test in staging, live in prod'], icon: 'stripe', band: 'Servizi esterni', x: 1180, y: 390, desc: 'Pagamenti con carta, Apple Pay e Google Pay. I dati della carta restano su Stripe.' },
+  { id: 'sendgrid', n: 'SendGrid', s: ['email transazionali', 'conferma ordine, spedizione'], icon: 'sendgrid', band: 'Servizi esterni', x: 1180, y: 620, desc: 'Email transazionali con dominio mittente autenticato (SPF e DKIM su Cloudflare).' },
+  { id: 'brt', n: 'BRT', s: ['API etichette e tracking', 'utenza test e produzione'], mono: 'BRT', band: 'Servizi esterni', x: 1180, y: 1050, desc: 'API etichette e tracking del corriere, con utenza di test e di produzione.' },
+  { id: 'fic', n: 'Fatture in Cloud', s: ['invio fatture allo SDI', 'già collegato a BC'], mono: 'FiC', band: 'Servizi esterni', x: 1180, y: 1300, desc: 'Fattura elettronica verso SDI, già collegato a Business Central. Invariato.' },
+  { id: 'bc', n: 'Business Central', s: ['SaaS, ambienti sandbox e prod'], icon: 'bc', band: 'Tenant Entra ID aziendale', x: 60, y: 1240, h: 210, desc: 'Resta com\'è per contabilità e ordini da agenti. Si aggiungono API custom per le giacenze, integrazione BRT per le etichette e webhook subscription verso le Functions.',
+    mods: [{ id: 'bc.api', t: 'API custom giacenze', s: 'lette dalle Functions' }, { id: 'bc.brt', t: 'Integrazione BRT', s: 'etichetta a evasione ordine' }, { id: 'bc.fic', t: 'Fatture in Cloud', s: 'fattura elettronica' }] },
+  { id: 'entra', n: 'Microsoft Entra ID', s: ['identità dipendenti', 'MFA, PIM, app registration'], icon: 'entra', band: 'Tenant Entra ID aziendale', x: 340, y: 1378, desc: 'Identità dei dipendenti; ospita le app registration e i gruppi PIM del progetto.' },
+  { id: 'barcode', n: 'Lettori barcode', s: ['app mobile standard di BC'], mono: 'EAN', band: 'On-premise · magazzino', x: 60, y: 1545, desc: 'App mobile standard di Business Central per la preparazione in magazzino.' }
+];
+const EDGES = [
+  { id: 'e1', a: 'browser', b: 'ext', d: [[340, 116], [300, 116]], l: 'OIDC', lx: 320, ly: 104 },
+  { id: 'e2', a: 'browser', b: 'cdn', d: [[580, 116], [620, 116]] },
+  { id: 'e3', a: 'cdn', b: 'store', d: [[740, 152], [740, 260]], l: 'HTTPS', lx: 740, ly: 242 },
+  { id: 'e4', a: 'cdn', b: 'blob', d: [[860, 116], [1020, 116], [1020, 260]], l: 'immagini', lx: 1020, ly: 240 },
+  { id: 'e5', a: 'store', b: 'apim', d: [[740, 332], [740, 390]], l: 'REST + JWT', lx: 790, ly: 382 },
+  { id: 'e6', a: 'apim', b: 'api', d: [[740, 462], [740, 520]], l: 'REST', lx: 740, ly: 496 },
+  { id: 'e7', a: 'stripe', b: 'apim', d: [[1180, 426], [860, 426]], l: 'webhook pagamento', lx: 1020, ly: 430 },
+  { id: 'e8', a: 'api', b: 'stripe', d: [[860, 550], [1300, 550], [1300, 462]], l: 'crea pagamento', lx: 1020, ly: 554 },
+  { id: 'e9', a: 'api', b: 'sendgrid', d: [[860, 656], [1180, 656]], l: 'email', lx: 1020, ly: 660 },
+  { id: 'e10', a: 'api', b: 'sql', d: [[740, 778], [740, 860]], l: 'SQL', lx: 740, ly: 804 },
+  { id: 'e11', a: 'api', b: 'sb', d: [[620, 740], [460, 740], [460, 860]], l: 'ordine pagato / spedito', lx: 460, ly: 794, bi: true },
+  { id: 'e12', a: 'fn', b: 'sb', d: [[300, 896], [340, 896]], bi: true },
+  { id: 'e13', a: 'fn', b: 'sql', d: [[300, 990], [740, 990], [740, 932]], l: 'catalogo, giacenze, stato', lx: 520, ly: 994 },
+  { id: 'e14', a: 'fn', b: 'blob', d: [[240, 860], [240, 361], [1020, 361], [1020, 332]], l: 'immagini prodotto', lx: 240, ly: 604 },
+  { id: 'e15', a: 'fn', b: 'brt', d: [[300, 1086], [1180, 1086]], l: 'tracking', lx: 1020, ly: 1090 },
+  { id: 'e16', a: 'fn', b: 'bc', d: [[270, 1118], [270, 1240]], l: 'API · webhook giacenze', lx: 270, ly: 1184, bi: true },
+  { id: 'e17', a: 'bc', b: 'brt', d: [[300, 1280], [1150, 1280], [1150, 1110], [1180, 1110]], l: 'etichetta', lx: 720, ly: 1284 },
+  { id: 'e18', a: 'bc', b: 'fic', d: [[300, 1336], [1180, 1336]], l: 'fattura (flusso esistente)', lx: 720, ly: 1340 },
+  { id: 'e19', a: 'barcode', b: 'bc', d: [[270, 1545], [270, 1450]], l: 'app mobile', lx: 270, ly: 1494 }
+];
+const FLOWS = [
+  { id: 'f1', g: 'Percorso di un ordine', t: 'Navigazione del catalogo', w: 'Storefront', note: 'Il catalogo in Azure SQL è alimentato da sync catalogo ogni 15 minuti; le immagini arrivano da Blob Storage tramite la CDN Cloudflare.',
+    h: [['browser', 'cdn', 'e2', 1, 'Richiesta HTTPS del sito'], ['cdn', 'store', 'e3', 1, 'Pagina servita dallo storefront'], ['store', 'apim', 'e5', 1, 'Chiamata REST all\'API'], ['apim', 'api', 'e6', 1, 'Inoltro al modulo catalogo', ['api.cat']], ['api', 'sql', 'e10', 1, 'Lettura di prodotti, prezzi e giacenze', ['api.cat']], ['cdn', 'blob', 'e4', 1, 'Immagini prodotto dalla CDN']] },
+  { id: 'f2', g: 'Percorso di un ordine', t: 'Carrello con controllo della giacenza', w: 'API e-commerce, modulo carrello', note: 'La giacenza letta dal carrello è quella aggiornata al cambio in Business Central, non al ciclo dei 15 minuti.',
+    h: [['bc', 'fn', 'e16', -1, 'Webhook di variazione giacenza', ['bc.api', 'fn.stock']], ['fn', 'bc', 'e16', 1, 'Lettura dall\'API custom giacenze', ['bc.api', 'fn.stock']], ['fn', 'sql', 'e13', 1, 'Aggiornamento della giacenza', ['fn.stock']], ['api', 'sql', 'e10', 1, 'Il carrello legge la giacenza', ['api.cart']]] },
+  { id: 'f3', g: 'Percorso di un ordine', t: 'Login o registrazione', w: 'Entra External ID', note: 'API Management valida il JWT con le chiavi pubbliche di External ID prima di inoltrare la chiamata.',
+    h: [['browser', 'ext', 'e1', 1, 'Login OIDC (authorization code + PKCE)'], ['ext', 'browser', 'e1', -1, 'Emissione del JWT del cliente'], ['store', 'apim', 'e5', 1, 'Chiamata con JWT e subscription key'], ['apim', 'ext', null, 1, 'Validazione del JWT con le chiavi JWKS']] },
+  { id: 'f4', g: 'Percorso di un ordine', t: 'Pagamento', w: 'Stripe', note: 'L\'API non tratta mai i dati della carta: restano su Stripe.',
+    h: [['store', 'apim', 'e5', 1, 'Avvio del checkout'], ['apim', 'api', 'e6', 1, 'Inoltro al modulo checkout', ['api.chk']], ['api', 'stripe', 'e8', 1, 'Creazione del pagamento', ['api.chk']], ['browser', 'stripe', null, 1, 'Carta, Apple Pay o Google Pay su Stripe']] },
+  { id: 'f5', g: 'Percorso di un ordine', t: 'Conferma del pagamento', w: 'API e-commerce, modulo checkout', note: 'Lo stato passa a pagato solo sul webhook firmato, non sul ritorno del browser, che può non arrivare.',
+    h: [['stripe', 'apim', 'e7', 1, 'Webhook di pagamento firmato'], ['apim', 'api', 'e6', 1, 'Inoltro al checkout', ['api.chk']], ['api', 'sql', 'e10', 1, 'Ordine in stato pagato', ['api.chk']], ['api', 'sb', 'e11', 1, 'Messaggio ordine pagato', ['api.chk']], ['api', 'sendgrid', 'e9', 1, 'Email di conferma ordine', ['api.chk']]] },
+  { id: 'f6', g: 'Percorso di un ordine', t: 'Ordine in Business Central', w: 'Function invio ordini', note: 'Se Business Central non risponde il messaggio resta in coda e viene ritentato, senza perdere l\'ordine.',
+    h: [['sb', 'fn', 'e12', -1, 'Lettura del messaggio ordine pagato', ['fn.ord']], ['fn', 'bc', 'e16', 1, 'Creazione dell\'ordine di vendita', ['fn.ord']]] },
+  { id: 'f7', g: 'Percorso di un ordine', t: 'Preparazione e spedizione', w: 'Magazzino, Business Central', note: 'Il magazzino lavora come oggi; l\'etichetta BRT viene generata da Business Central all\'evasione.',
+    h: [['barcode', 'bc', 'e19', 1, 'Evasione con i lettori barcode'], ['bc', 'brt', 'e17', 1, 'Generazione dell\'etichetta BRT', ['bc.brt']]] },
+  { id: 'f8', g: 'Percorso di un ordine', t: 'Email con il tracking', w: 'Function stato spedizione', note: 'L\'invio dell\'email resta nell\'API, così tutte le email al cliente partono da un solo componente.',
+    h: [['fn', 'bc', 'e16', 1, 'Lettura del numero di spedizione', ['fn.ship']], ['fn', 'brt', 'e15', 1, 'Lettura del tracking', ['fn.ship']], ['fn', 'sb', 'e12', 1, 'Messaggio ordine spedito', ['fn.ship']], ['sb', 'api', 'e11', -1, 'L\'API riceve ordine spedito'], ['api', 'sendgrid', 'e9', 1, 'Email con il tracking']] },
+  { id: 'f9', g: 'Percorso di un ordine', t: 'Fattura elettronica', w: 'Business Central, Fatture in Cloud', note: 'Flusso già in uso, invariato.',
+    h: [['bc', 'fic', 'e18', 1, 'Invio della fattura', ['bc.fic']], ['fic', 'SDI', null, 1, 'Trasmissione allo SDI']] },
+  { id: 'f10', g: 'Percorso di un ordine', t: 'Consegna e chiusura', w: 'Function stato spedizione, area cliente', note: 'Il cliente vede l\'ordine consegnato nell\'area cliente.',
+    h: [['fn', 'brt', 'e15', 1, 'Stato consegnato da BRT', ['fn.ship']], ['fn', 'sql', 'e13', 1, 'Aggiornamento dello stato ordine', ['fn.ship']], ['store', 'apim', 'e5', 1, 'Il cliente apre l\'area cliente'], ['apim', 'api', 'e6', 1, 'Inoltro all\'area cliente', ['api.area']], ['api', 'sql', 'e10', 1, 'Lettura degli ordini', ['api.area']]] },
+  { id: 'f11', g: 'Integrazioni pianificate', t: 'Sincronizzazione del catalogo', w: 'Function sync catalogo, ogni 15 minuti', note: 'Articoli, prezzi e immagini passano da Business Central al sito senza intervento manuale.',
+    h: [['fn', 'bc', 'e16', 1, 'Lettura di articoli e prezzi', ['fn.cat']], ['fn', 'sql', 'e13', 1, 'Scrittura del catalogo', ['fn.cat']], ['fn', 'blob', 'e14', 1, 'Caricamento delle immagini prodotto', ['fn.cat']]] }
+];
+const TECHS = [
+  { id: 'next', g: 'Framework e protocolli', n: 'Next.js', icon: 'next', e: ['store'], d: 'Framework dello storefront: pagine e sessione del cliente, ospitato su App Service.' },
+  { id: 'dotnet', g: 'Framework e protocolli', n: '.NET 8', icon: 'dotnet', e: ['api'], d: 'Runtime dell\'API e-commerce: catalogo, carrello, checkout, area cliente.' },
+  { id: 'oidc', g: 'Framework e protocolli', n: 'OIDC e OAuth 2.0', mono: 'JWT', e: ['browser', 'ext', 'store', 'apim', 'fn', 'bc'], d: 'Login dei clienti con authorization code + PKCE; client credentials tra Functions e Business Central.' },
+  { id: 'webhook', g: 'Framework e protocolli', n: 'Webhook', mono: 'HOOK', e: ['stripe', 'apim', 'api', 'bc', 'fn'], d: 'Pagamento confermato da Stripe con firma HMAC; variazione giacenze da Business Central con function key e clientState.' },
+  { id: 'app', g: 'Microsoft Azure', n: 'Azure App Service', icon: 'app', e: ['store', 'api'], d: 'Un App Service plan con due App Service: storefront Next.js e API .NET 8.' },
+  { id: 'apim', g: 'Microsoft Azure', n: 'Azure API Management', icon: 'apim', e: ['apim'], d: 'Gateway davanti all\'API: validazione JWT, subscription key, ingresso del webhook Stripe.' },
+  { id: 'sql', g: 'Microsoft Azure', n: 'Azure SQL Database', icon: 'sql', e: ['sql'], d: 'Catalogo, carrelli e ordini, con private endpoint.' },
+  { id: 'sb', g: 'Microsoft Azure', n: 'Azure Service Bus', icon: 'sb', e: ['sb'], d: 'Topic ordini (ordine pagato, ordine spedito); tier Premium per il private endpoint.' },
+  { id: 'func', g: 'Microsoft Azure', n: 'Azure Functions', icon: 'func', e: ['fn'], d: 'Sync catalogo, sync giacenze, invio ordini, stato spedizione, con integrazione VNet.' },
+  { id: 'blob', g: 'Microsoft Azure', n: 'Azure Blob Storage', icon: 'blob', e: ['blob'], d: 'Immagini prodotto e storage di servizio delle Functions.' },
+  { id: 'kv', g: 'Microsoft Azure', n: 'Azure Key Vault', icon: 'kv', e: ['kv'], d: 'Segreti di Stripe, SendGrid, BRT, Business Central e function key, uno per ambiente.' },
+  { id: 'ai', g: 'Microsoft Azure', n: 'Application Insights e Log Analytics', icon: 'ai', e: ['ai'], d: 'Log, metriche e tracciamento delle chiamate tra componenti.' },
+  { id: 'vnet', g: 'Microsoft Azure', n: 'VNet e private endpoint', icon: 'vnet', e: ['sb', 'sql', 'fn', 'store', 'api'], d: 'Integrazione di rete di App Service e Functions, private endpoint di SQL e Service Bus.' },
+  { id: 'ext', g: 'Microsoft Entra e Dynamics', n: 'Microsoft Entra External ID', icon: 'ext', e: ['ext'], d: 'Tenant esterno per l\'identità dei clienti, separato dalle identità dei dipendenti.' },
+  { id: 'entra', g: 'Microsoft Entra e Dynamics', n: 'Microsoft Entra ID', icon: 'entra', e: ['entra', 'bc'], d: 'Identità dei dipendenti, app registration per Business Central, gruppi PIM con MFA.' },
+  { id: 'bc', g: 'Microsoft Entra e Dynamics', n: 'Dynamics 365 Business Central', icon: 'bc', e: ['bc', 'barcode'], d: 'ERP SaaS con ambienti sandbox e produzione; esteso con API custom, integrazione BRT e webhook subscription.' },
+  { id: 'cloudflare', g: 'Servizi esterni', n: 'Cloudflare', icon: 'cloudflare', e: ['cdn'], d: 'DNS, certificato e CDN; ospita anche i record SPF e DKIM di SendGrid.' },
+  { id: 'stripe', g: 'Servizi esterni', n: 'Stripe', icon: 'stripe', e: ['stripe', 'api'], d: 'Pagamenti con modalità test e live; secret key e chiave di firma del webhook in Key Vault.' },
+  { id: 'sendgrid', g: 'Servizi esterni', n: 'SendGrid', icon: 'sendgrid', e: ['sendgrid', 'api'], d: 'Email transazionali con dominio mittente autenticato.' },
+  { id: 'brt', g: 'Servizi esterni', n: 'API BRT', mono: 'BRT', e: ['brt', 'fn', 'bc'], d: 'Tracking dalle Functions ed etichette da Business Central.' },
+  { id: 'fic', g: 'Servizi esterni', n: 'Fatture in Cloud', mono: 'FiC', e: ['fic', 'bc'], d: 'Fattura elettronica verso SDI, collegamento esistente con Business Central.' }
+];
+const AUTH_KIND = { mi: 'Identità gestita', tok: 'Token OAuth / OIDC', sec: 'Segreto conservato', per: 'Identità persona' };
+const AUTH = [
+  [1, 'per', 'browser', ['ext'], 'Login OIDC (authorization code + PKCE)', 'account del cliente in External ID'],
+  [2, 'tok', 'store', ['apim'], 'Subscription key + JWT del cliente', 'subscription key nelle app settings con riferimento a Key Vault; JWT nella sessione'],
+  [3, 'tok', 'apim', ['ext'], 'Lettura delle chiavi pubbliche (JWKS) per validare il JWT', 'nessuna, le chiavi sono pubbliche'],
+  [4, 'tok', 'apim', ['api'], 'JWT inoltrato; l\'App Service accetta traffico solo da API Management', 'nessuna'],
+  [5, 'sec', 'api', ['stripe'], 'Secret key', 'Key Vault'],
+  [6, 'sec', 'stripe', ['apim'], 'Firma HMAC del webhook, verificata dall\'API', 'chiave di firma in Key Vault'],
+  [7, 'sec', 'api', ['sendgrid'], 'API key', 'Key Vault'],
+  [8, 'mi', 'api', ['sql', 'sb', 'blob', 'kv'], 'Identità gestita assegnata dal sistema + ruoli RBAC', 'nessuna da conservare'],
+  [9, 'mi', 'fn', ['sql', 'sb', 'blob', 'kv'], 'Identità gestita assegnata dal sistema + ruoli RBAC', 'nessuna da conservare'],
+  [10, 'tok', 'fn', ['bc'], 'OAuth 2.0 client credentials, app registration in Entra ID aziendale', 'client secret in Key Vault, rotazione ogni 12 mesi'],
+  [11, 'sec', 'bc', ['fn'], 'Webhook giacenze: function key + clientState della subscription', 'Key Vault'],
+  [12, 'sec', 'fn', ['brt'], 'Utente e password API', 'Key Vault'],
+  [13, 'sec', 'bc', ['brt'], 'Utente e password API', 'configurazione di Business Central'],
+  [14, 'sec', 'bc', ['fic'], 'Collegamento esistente', 'configurazione di Business Central'],
+  [15, 'per', 'Amministratori', ['entra'], 'Utenti Entra ID, MFA obbligatoria, PIM per i ruoli privilegiati', 'identità della persona']
+];
+const THEMES = {
+  light: { paper: '#FBFAF8', panel: '#F3F0EC', card: '#FFFFFF', ink: '#382F2D', muted: '#76696A', rule: '#E2DCD6', accent: '#F08019', 'accent-ink': '#B35A07', 'accent-soft': '#FDEBD9', band: 'rgba(56,47,45,.03)', 'band-line': '#C9C0B8', edge: '#A89A94', 'edge-flow': '#8A7F7A' },
+  dark: { paper: '#171412', panel: '#1F1A18', card: '#262120', ink: '#EFE9E6', muted: '#A99D98', rule: '#3A322F', accent: '#F5954A', 'accent-ink': '#F7A763', 'accent-soft': '#3A2616', band: 'rgba(239,233,230,.035)', 'band-line': '#4A3F3B', edge: '#6F625D', 'edge-flow': '#9C8F8A' }
+};
+const byId = Object.fromEntries(ENTS.map(e => [e.id, e]));
+const edgeById = Object.fromEntries(EDGES.map(e => [e.id, e]));
+const nameOf = id => (byId[id] ? byId[id].n : id);
+const num = i => String(i).padStart(2, '0');
+class Component extends DCLogic {
+  state = { tab: 'flows', sel: { kind: 'flow', id: 'f1' }, hop: 0, playing: false, theme: 'light', fit: 'page' };
+  componentDidMount() {
+    try {
+      const t = localStorage.getItem('eosArchTheme');
+      if (t === 'light' || t === 'dark') this.setState({ theme: t });
+      else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) this.setState({ theme: 'dark' });
+    } catch (e) {}
+    this.applyTheme();
+    this.autoFit();
+  }
+  componentWillUnmount() { clearTimeout(this.timer); if (this._ro) this._ro.disconnect(); }
+  view = { z: 0.5, tx: 0, ty: 0 };
+  applyView() {
+    const s = this._stage; if (!s) return;
+    const v = this.view;
+    s.style.transform = 'translate(' + v.tx + 'px,' + v.ty + 'px) scale(' + v.z + ')';
+    const pct = Math.round(v.z * 100) + '%';
+    if (this.state.zoomLabel !== pct) this.setState({ zoomLabel: pct });
+  }
+  fit() {
+    const vp = this._vp; if (!vp) return;
+    const W = vp.clientWidth, H = vp.clientHeight; if (!W || !H) return;
+    const z = Math.min((W - 40) / 1460, (H - 40) / 1660);
+    this.view = { z, tx: (W - 1460 * z) / 2, ty: (H - 1660 * z) / 2 };
+    this._userMoved = false;
+    this.applyView();
+  }
+  zoomAt(f, mx, my) {
+    const v = this.view, vp = this._vp; if (!vp) return;
+    if (mx == null) { mx = vp.clientWidth / 2; my = vp.clientHeight / 2; }
+    const nz = Math.min(4, Math.max(0.15, v.z * f));
+    const k = nz / v.z;
+    this.view = { z: nz, tx: mx - (mx - v.tx) * k, ty: my - (my - v.ty) * k };
+    this._userMoved = true;
+    this.applyView();
+  }
+  setVp = el => {
+    if (el === this._vp) return;
+    if (this._vp) { this._vp.removeEventListener('wheel', this._wheel); this._vp.removeEventListener('mousedown', this._md); }
+    this._vp = el; if (!el) return;
+    this._wheel = e => { e.preventDefault(); const r = el.getBoundingClientRect(); this.zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), e.clientX - r.left, e.clientY - r.top); };
+    this._md = e => { if (e.button === 1) e.preventDefault(); };
+    el.addEventListener('wheel', this._wheel, { passive: false });
+    el.addEventListener('mousedown', this._md);
+    if (window.ResizeObserver) { this._ro = new ResizeObserver(() => { if (!this._userMoved) this.fit(); }); this._ro.observe(el); }
+    requestAnimationFrame(() => this.fit());
+  };
+  setStage = el => { this._stage = el; if (el) { this.applyView(); this.autoFit(); } };
+  autoFit() {
+    let n = 0;
+    const tick = () => {
+      if (this._userMoved) return;
+      if (this._vp && this._stage && this._vp.clientWidth && this._vp.clientHeight) this.fit();
+      if (++n < 12) setTimeout(tick, 150);
+    };
+    tick();
+  }
+  onPD = e => {
+    if (e.button !== 0 && e.button !== 1) return;
+    if (e.button === 1) e.preventDefault();
+    this._drag = { id: e.pointerId, x: e.clientX, y: e.clientY, tx: this.view.tx, ty: this.view.ty, moved: e.button === 1, mid: e.button === 1 };
+    if (e.button === 1) { e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.style.cursor = 'grabbing'; }
+    this._suppress = false;
+  };
+  onPM = e => {
+    const d = this._drag; if (!d || d.id !== e.pointerId) return;
+    const dx = e.clientX - d.x, dy = e.clientY - d.y;
+    if (!d.moved && Math.hypot(dx, dy) > 4) { d.moved = true; e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.style.cursor = 'grabbing'; }
+    if (!d.moved) return;
+    this.view = { z: this.view.z, tx: d.tx + dx, ty: d.ty + dy };
+    this._userMoved = true;
+    this.applyView();
+  };
+  onPU = e => {
+    const d = this._drag; if (!d) return;
+    if (d.moved && !d.mid) this._suppress = true;
+    this._drag = null;
+    e.currentTarget.style.cursor = 'grab';
+  };
+  onCC = e => { if (this._suppress) { e.stopPropagation(); e.preventDefault(); this._suppress = false; } };
+  applyTheme() {
+    const t = THEMES[this.state.theme], r = document.documentElement;
+    Object.entries(t).forEach(([k, v]) => r.style.setProperty('--' + k, v));
+    r.style.colorScheme = this.state.theme;
+  }
+  schedule() {
+    clearTimeout(this.timer);
+    if (!this.state.playing) return;
+    const ms = this.props.stepMs ?? 2200;
+    this.timer = setTimeout(() => this.advance(true), ms);
+  }
+  curFlow() { return this.state.sel?.kind === 'flow' ? FLOWS.find(f => f.id === this.state.sel.id) : null; }
+  advance(auto) {
+    const f = this.curFlow(); if (!f) return;
+    if (this.state.hop < f.h.length - 1) return this.setState({ hop: this.state.hop + 1 });
+    const autoNext = this.props.autoNext ?? true;
+    const i = FLOWS.indexOf(f);
+    if (auto && autoNext && i < FLOWS.length - 1) return this.setState({ sel: { kind: 'flow', id: FLOWS[i + 1].id }, hop: 0 });
+    if (auto) this.setState({ playing: false });
+  }
+  back() {
+    const f = this.curFlow(); if (!f) return;
+    if (this.state.hop > 0) this.setState({ hop: this.state.hop - 1 });
+  }
+  select(kind, id, tab) {
+    const s = this.state.sel;
+    if (s && s.kind === kind && s.id === id) return this.setState({ sel: null, playing: false });
+    this.setState({ sel: { kind, id }, hop: 0, playing: false, tab: tab || this.state.tab });
+  }
+  highlight() {
+    const s = this.state.sel; if (!s) return null;
+    const nodes = new Set(), mods = new Set(), edges = new Map();
+    let cur = null, focus = null;
+    if (s.kind === 'flow') {
+      const f = FLOWS.find(x => x.id === s.id);
+      f.h.forEach((h, i) => {
+        nodes.add(h[0]); nodes.add(h[1]); (h[5] || []).forEach(m => mods.add(m));
+        if (h[2]) { const p = edges.get(h[2]) || 0; edges.set(h[2], p === 0 ? h[3] : (p === h[3] ? p : 2)); }
+      });
+      const h = f.h[this.state.hop];
+      if (h) cur = { from: h[0], to: h[1], edge: h[2], dir: h[3], mods: new Set(h[5] || []) };
+    } else if (s.kind === 'entity') {
+      focus = s.id; nodes.add(s.id);
+      EDGES.forEach(e => { if (e.a === s.id || e.b === s.id) { nodes.add(e.a); nodes.add(e.b); edges.set(e.id, 1); } });
+    } else if (s.kind === 'tech') {
+      const t = TECHS.find(x => x.id === s.id); t.e.forEach(id => nodes.add(id));
+      EDGES.forEach(e => { if (nodes.has(e.a) && nodes.has(e.b)) edges.set(e.id, 1); });
+    }
+    return { nodes, mods, edges, cur, focus };
+  }
+  renderDiagram(hl) {
+    const h = React.createElement;
+    const dim = !!hl;
+    const dimOp = this.props.dimOpacity ?? 0.22;
+    const pts = d => 'M' + d.map(p => p.join(' ')).join(' L');
+    const flowPath = (e, dir, k, strong, isCur) => h('path', {
+      key: k, d: pts(e.d), fill: 'none',
+      stroke: strong ? 'var(--accent,#F08019)' : 'var(--edge-flow,#8A7F7A)',
+      strokeWidth: isCur ? 5 : strong ? 3.6 : 2.4, strokeLinecap: 'round', strokeDasharray: '0 12',
+      style: { animation: (dir < 0 ? 'eosFlowRev ' : 'eosFlow ') + (isCur ? '0.55s' : strong ? '0.9s' : '1.8s') + ' linear infinite' }
+    });
+    const bands = BANDS.map((b, i) => h('g', { key: 'b' + i },
+      h('rect', { x: b.x, y: b.y, width: b.w, height: b.h, rx: 6, fill: 'var(--band)', stroke: 'var(--band-line,#C9C0B8)', strokeDasharray: '5 4' }),
+      h('text', { x: b.x + 14, y: b.y + 20, fill: 'var(--muted,#76696A)', style: { fontFamily: "'Barlow Semi Condensed',sans-serif", fontSize: 13, fontWeight: 600, letterSpacing: '.06em' } }, b.l)));
+    const edgeEls = EDGES.map(e => {
+      const inv = !dim || hl.edges.has(e.id);
+      const strong = dim && inv;
+      const isCur = !!(hl && hl.cur && hl.cur.edge === e.id);
+      const dir = strong ? hl.edges.get(e.id) : 1;
+      const flows = [];
+      if (isCur) flows.push(h('path', { key: 'g', d: pts(e.d), fill: 'none', stroke: 'var(--accent,#F08019)', strokeWidth: 14, strokeLinecap: 'round', style: { animation: 'eosPulse 1.4s ease-in-out infinite' } }));
+      if (inv) {
+        if (isCur) flows.push(flowPath(e, hl.cur.dir, 'f', true, true));
+        else if (dir === 2) { flows.push(flowPath(e, 1, 'f1', strong, false)); flows.push(flowPath(e, -1, 'f2', strong, false)); }
+        else flows.push(flowPath(e, dir, 'f', strong, false));
+      }
+      return h('g', { key: e.id, style: { opacity: inv ? 1 : dimOp * 0.7, transition: 'opacity .35s' } },
+        h('path', { d: pts(e.d), fill: 'none', stroke: strong ? 'var(--accent,#F08019)' : 'var(--edge,#A89A94)', strokeOpacity: strong ? 0.45 : 1, strokeWidth: strong ? 2 : 1.5, markerEnd: strong ? 'url(#mk-acc)' : 'url(#mk-base)', markerStart: e.bi ? (strong ? 'url(#mk-acc)' : 'url(#mk-base)') : undefined }),
+        ...flows);
+    });
+    const labelEls = EDGES.filter(e => e.l).map(e => {
+      const inv = !dim || hl.edges.has(e.id);
+      const w = e.l.length * 6.4 + 12;
+      return h('g', { key: 'l' + e.id, style: { opacity: inv ? 1 : dimOp, transition: 'opacity .35s' } },
+        h('rect', { x: e.lx - w / 2, y: e.ly - 13, width: w, height: 18, rx: 3, fill: 'var(--paper,#FBFAF8)', stroke: dim && inv ? 'var(--accent,#F08019)' : 'none', strokeWidth: 1 }),
+        h('text', { x: e.lx, y: e.ly, textAnchor: 'middle', fill: dim && inv ? 'var(--ink,#382F2D)' : 'var(--muted,#76696A)', style: { fontSize: 11.5, fontWeight: dim && inv ? 600 : 400 } }, e.l));
+    });
+    const nodeEls = ENTS.map(n => {
+      const H = n.h || 72, W = 240;
+      const inv = !dim || hl.nodes.has(n.id);
+      const hot = hl && ((hl.cur && (hl.cur.from === n.id || hl.cur.to === n.id)) || hl.focus === n.id);
+      const kids = [
+        hot ? h('rect', { key: 'glow', x: n.x - 5, y: n.y - 5, width: W + 10, height: H + 10, rx: 11, fill: 'none', stroke: 'var(--accent,#F08019)', strokeWidth: 6, style: { animation: 'eosPulse 1.4s ease-in-out infinite' } }) : null,
+        h('rect', { key: 'r', x: n.x, y: n.y, width: W, height: H, rx: 8, fill: 'var(--card,#FFFFFF)', stroke: hot ? 'var(--accent,#F08019)' : (dim && inv ? 'var(--accent,#F08019)' : 'var(--band-line,#C9C0B8)'), strokeWidth: hot ? 2.4 : dim && inv ? 1.6 : 1.2 }),
+        n.icon ? h('image', { key: 'i', href: IC(n.icon), x: n.x + 14, y: n.y + 18, width: 34, height: 34 })
+          : h('g', { key: 'i' }, h('rect', { x: n.x + 14, y: n.y + 18, width: 34, height: 34, rx: 7, fill: 'var(--panel,#F3F0EC)', stroke: 'var(--rule,#E2DCD6)' }),
+            h('text', { x: n.x + 31, y: n.y + 39, textAnchor: 'middle', fill: 'var(--ink,#382F2D)', style: { fontFamily: "'JetBrains Mono',monospace", fontSize: 10, fontWeight: 500 } }, n.mono)),
+        h('text', { key: 't', x: n.x + 60, y: n.y + 30, fill: 'var(--ink,#382F2D)', style: { fontSize: 15, fontWeight: 700, fontFamily: "'Barlow Semi Condensed',sans-serif" } }, n.n),
+        ...n.s.map((s, i) => h('text', { key: 's' + i, x: n.x + 60, y: n.y + 47 + i * 15, fill: 'var(--muted,#76696A)', style: { fontSize: 11.5 } }, s))
+      ];
+      if (n.mods) {
+        kids.push(h('line', { key: 'rule', x1: n.x + 12, x2: n.x + W - 12, y1: n.y + 62, y2: n.y + 62, stroke: 'var(--rule,#E2DCD6)' }));
+        n.mods.forEach((m, i) => {
+          const my = n.y + 72 + i * 48;
+          const mh = hl && hl.mods.has(m.id), mc = hl && hl.cur && hl.cur.mods.has(m.id);
+          kids.push(h('g', { key: m.id },
+            h('rect', { x: n.x + 12, y: my, width: 216, height: 40, rx: 5, fill: mh ? 'var(--accent-soft,#FDEBD9)' : 'var(--paper,#FBFAF8)', stroke: mh ? 'var(--accent,#F08019)' : 'var(--rule,#E2DCD6)', strokeWidth: mc ? 2 : 1.1 }),
+            h('text', { x: n.x + 24, y: my + 17, fill: 'var(--ink,#382F2D)', style: { fontSize: 12.5, fontWeight: 600 } }, m.t),
+            h('text', { x: n.x + 24, y: my + 32, fill: 'var(--muted,#76696A)', style: { fontSize: 11 } }, m.s)));
+        });
+      }
+      return h('g', { key: n.id, onClick: () => this.select('entity', n.id, 'entities'), style: { cursor: 'pointer', opacity: inv ? 1 : dimOp, transition: 'opacity .35s' } }, ...kids);
+    });
+    const mk = (id, col) => h('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, h('path', { d: 'M0 0 L10 5 L0 10 z', fill: col }));
+    return h('svg', {
+      viewBox: '0 0 1460 1660', xmlns: 'http://www.w3.org/2000/svg', role: 'img', 'aria-label': 'Schema dell\'architettura e-commerce e Business Central',
+      width: 1460, height: 1660, style: { display: 'block' }
+    },
+      h('defs', null, mk('mk-base', 'var(--edge,#A89A94)'), mk('mk-acc', 'var(--accent,#F08019)')),
+      ...bands, ...edgeEls, ...nodeEls, ...labelEls);
+  }
+  renderVals() {
+    const st = this.state, s = st.sel;
+    if (this._lastTheme !== st.theme) { this._lastTheme = st.theme; this.applyTheme(); }
+    const key = st.playing + '|' + st.hop + '|' + (s && s.id) + '|' + this.props.stepMs;
+    if (this._lastKey !== key) { this._lastKey = key; setTimeout(() => this.schedule(), 0); }
+    const hl = this.highlight();
+    const flow = this.curFlow();
+    const hopRoute = hh => nameOf(hh[0]) + ' → ' + nameOf(hh[1]);
+    const flowGroups = [];
+    FLOWS.forEach((f, i) => {
+      let g = flowGroups.find(x => x.name === f.g);
+      if (!g) { g = { name: f.g, items: [] }; flowGroups.push(g); }
+      const active = !!(s && s.kind === 'flow' && s.id === f.id);
+      g.items.push({
+        num: num(i + 1), title: f.t, where: f.w, note: f.note, active, inactive: !active,
+        onClick: () => this.select('flow', f.id),
+        hops: active ? f.h.map((hh, j) => ({ n: j + 1, label: hh[4], route: hopRoute(hh), cur: j === st.hop, notCur: j !== st.hop, onClick: () => this.setState({ hop: j }) })) : []
+      });
+    });
+    const flowsOf = id => FLOWS.map((f, i) => ({ f, i })).filter(({ f }) => f.h.some(hh => hh[0] === id || hh[1] === id || (hh[5] || []).some(m => m.startsWith(id + '.'))));
+    const entityGroups = [];
+    ENTS.forEach(e => {
+      let g = entityGroups.find(x => x.name === e.band);
+      if (!g) { g = { name: e.band, items: [] }; entityGroups.push(g); }
+      const active = !!(s && s.kind === 'entity' && s.id === e.id);
+      const techs = TECHS.filter(t => t.e.includes(e.id));
+      const fl = flowsOf(e.id);
+      const auth = AUTH.filter(a => a[2] === e.id || a[3].includes(e.id)).map(a => ({ route: a[0] + '. ' + nameOf(a[2]) + ' → ' + a[3].map(nameOf).join(', '), kind: AUTH_KIND[a[1]], mech: a[4], cred: a[5] }));
+      g.items.push({
+        name: e.n, sub: e.s[0], icon: e.icon ? IC(e.icon) : null, noIcon: !e.icon, mono: e.mono, band: e.band, desc: e.desc, active, inactive: !active,
+        onClick: () => this.select('entity', e.id),
+        modules: e.mods || [], hasModules: !!e.mods,
+        techs: techs.map(t => ({ name: t.n, onClick: () => this.select('tech', t.id, 'techs') })), hasTechs: techs.length > 0,
+        flows: fl.map(({ f, i }) => ({ num: num(i + 1), title: f.t, onClick: () => this.select('flow', f.id, 'flows') })), hasFlows: fl.length > 0,
+        auth, hasAuth: auth.length > 0
+      });
+    });
+    const techGroups = [];
+    TECHS.forEach(t => {
+      let g = techGroups.find(x => x.name === t.g);
+      if (!g) { g = { name: t.g, items: [] }; techGroups.push(g); }
+      const active = !!(s && s.kind === 'tech' && s.id === t.id);
+      g.items.push({
+        name: t.n, icon: t.icon ? IC(t.icon) : null, noIcon: !t.icon, mono: t.mono, desc: t.d, active, inactive: !active,
+        usedBy: t.e.map(nameOf).join(', '),
+        onClick: () => this.select('tech', t.id),
+        ents: t.e.map(id => ({ name: nameOf(id), onClick: () => this.select('entity', id, 'entities') }))
+      });
+    });
+    let statusKicker = 'Esplora lo schema', statusText = 'Seleziona un flusso, un\'entità o una tecnologia';
+    if (flow) {
+      const hh = flow.h[st.hop];
+      statusKicker = 'Flusso ' + num(FLOWS.indexOf(flow) + 1) + ' · ' + flow.t + ' · passo ' + (st.hop + 1) + ' di ' + flow.h.length;
+      statusText = hopRoute(hh) + ': ' + hh[4];
+    } else if (s && s.kind === 'entity') { statusKicker = 'Entità'; statusText = nameOf(s.id) + ' e i suoi collegamenti diretti'; }
+    else if (s && s.kind === 'tech') { const t = TECHS.find(x => x.id === s.id); statusKicker = 'Tecnologia'; statusText = t.n + ': ' + t.e.map(nameOf).join(', '); }
+    const tabDefs = [['flows', 'Flussi', FLOWS.length], ['entities', 'Entità', ENTS.length], ['techs', 'Tecnologie', TECHS.length]];
+    return {
+      rootH: this.props.frameHeight || '100vh',
+      themes: [['light', 'Chiaro'], ['dark', 'Scuro']].map(([k, l]) => ({ label: l, active: st.theme === k, inactive: st.theme !== k, onClick: () => { try { localStorage.setItem('eosArchTheme', k); } catch (e) {} this.setState({ theme: k }); } })),
+      tabs: tabDefs.map(([k, l, c]) => ({ label: l, count: c, active: st.tab === k, inactive: st.tab !== k, onClick: () => this.setState({ tab: k }) })),
+      vpRef: this.setVp, stageRef: this.setStage,
+      onPD: this.onPD, onPM: this.onPM, onPU: this.onPU, onCC: this.onCC,
+      zoomIn: () => this.zoomAt(1.25), zoomOut: () => this.zoomAt(0.8), zoomFit: () => this.fit(),
+      zoomLabel: st.zoomLabel || '—',
+      isFlows: st.tab === 'flows', isEntities: st.tab === 'entities', isTechs: st.tab === 'techs',
+      flowGroups, entityGroups, techGroups,
+      playLabel: st.playing ? 'Pausa' : 'Riproduci',
+      togglePlay: () => {
+        const f = this.curFlow(); if (!f) return;
+        if (!st.playing && st.hop >= f.h.length - 1) this.setState({ hop: 0, playing: true });
+        else this.setState({ playing: !st.playing });
+      },
+      nextHop: () => { this.setState({ playing: false }); this.advance(false); },
+      prevHop: () => { this.setState({ playing: false }); this.back(); },
+      hopCounter: flow ? (st.hop + 1) + '/' + flow.h.length : '',
+      progressPct: flow ? Math.round(((st.hop + 1) / flow.h.length) * 100) + '%' : '0%',
+      statusKicker, statusText,
+      hasSelection: !!s,
+      clearSel: () => this.setState({ sel: null, playing: false }),
+      diagram: this.renderDiagram(hl)
+    };
+  }
+}
+</script>
+</body>
+</html>
