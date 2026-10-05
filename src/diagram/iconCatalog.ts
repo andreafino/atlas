@@ -35,5 +35,5 @@ export const ICON_CATALOG: IconOption[] = [
 // una data URI generata al volo dai dati del set bundlato (nessuna chiamata di rete, resta offline).
 export function resolveIconUrl(id: string): string {
   if (id.startsWith("logos:")) return iconifyDataUri(id.slice(6)) ?? "";
-  return `/icons/${id}.svg`;
+  return `${import.meta.env.BASE_URL}icons/${id}.svg`;
 }

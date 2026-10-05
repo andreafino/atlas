@@ -29,7 +29,7 @@ Quando poi vorrai provare anche l'SSO, si riparte da `appPackage/manifest.json` 
 
 Nel portale Azure, Entra ID → **Registrazioni app** → Nuova registrazione:
 
-1. Nome: `EOS Architetture` (o quello che preferisci).
+1. Nome: `Atlas` (o quello che preferisci).
 2. Tipi di account supportati: solo il tuo tenant (single-tenant), salvo serva multi-tenant.
 3. Dopo la creazione, annota **Application (client) ID** e **Directory (tenant) ID**.
 4. **Esponi un'API** (Expose an API):

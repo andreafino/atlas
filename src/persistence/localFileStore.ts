@@ -14,7 +14,7 @@ declare global {
   }
 }
 
-const JSON_PICKER_TYPES = [{ description: "Diagramma EOS Architetture (JSON)", accept: { "application/json": [".json"] } }];
+const JSON_PICKER_TYPES = [{ description: "Diagramma Atlas (JSON)", accept: { "application/json": [".json"] } }];
 
 function isAbort(err: unknown): boolean {
   return err instanceof DOMException && err.name === "AbortError";

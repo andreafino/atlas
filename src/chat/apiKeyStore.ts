@@ -1,8 +1,9 @@
-const KEY = "eos-architetture-anthropic-key";
+const KEY = "atlas-anthropic-key";
+const LEGACY_KEY = "eos-architetture-anthropic-key";
 
 export function readStoredApiKey(): string | null {
   try {
-    return localStorage.getItem(KEY);
+    return localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY);
   } catch {
     return null;
   }

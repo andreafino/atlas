@@ -57,4 +57,19 @@ describe("diagramFile", () => {
     expect(() => fromFileContents("non un oggetto")).toThrow();
     expect(() => fromFileContents(null)).toThrow();
   });
+
+  it("accetta un file con il vecchio kind (eos-architetture-diagramma) senza lanciare errori", () => {
+    const versions = fixtureVersions();
+    const legacyFile = { kind: "eos-architetture-diagramma", formatVersion: 1, versions, index: 0 };
+    const restored = fromFileContents(legacyFile);
+    expect(restored.diagram).toEqual(versions[0].diagramma);
+  });
+
+  it("toFileContents produce sempre il nuovo kind (atlas-diagramma), anche partendo da un diagramma legacy", () => {
+    const versions = fixtureVersions();
+    const legacyFile = { kind: "eos-architetture-diagramma", formatVersion: 1, versions, index: 0 };
+    const restored = fromFileContents(legacyFile);
+    const file = toFileContents({ versions: restored.versions, index: restored.index, title: restored.title });
+    expect(file.kind).toBe("atlas-diagramma");
+  });
 });

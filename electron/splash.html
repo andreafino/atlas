@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #fbfaf8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      .wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      img {
+        width: 96px;
+        height: 96px;
+      }
+      .spinner {
+        width: 26px;
+        height: 26px;
+        border: 3px solid #e2dcd6;
+        border-top-color: #f08019;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <img src="../build/icon.png" alt="Atlas" />
+      <div class="spinner"></div>
+    </div>
+  </body>
+</html>

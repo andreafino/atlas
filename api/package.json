@@ -1,5 +1,5 @@
 {
-  "name": "eos-architetture-api",
+  "name": "atlas-api",
   "version": "1.0.0",
   "private": true,
   "description": "Backend minimo (Azure Functions) per lo scambio on-behalf-of del token SSO della tab Teams verso Microsoft Graph. Vedi TEAMS_SETUP.md.",

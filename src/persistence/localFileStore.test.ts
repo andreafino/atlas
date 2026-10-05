@@ -4,7 +4,7 @@ import { saveDiagramFile } from "./localFileStore";
 
 function fixtureFile(): DiagramFileV1 {
   return {
-    kind: "eos-architetture-diagramma",
+    kind: "atlas-diagramma",
     formatVersion: 1,
     index: 0,
     versions: [{ numero: 0, diagramma: { bands: [], entities: [], edges: [], flows: [], technologies: [], authKinds: { mi: "", tok: "", sec: "", per: "" }, auth: [] }, descrizione: "Versione iniziale", origine: "manuale", autore: "Sistema", data: "2026-10-01T00:00:00.000Z" }],

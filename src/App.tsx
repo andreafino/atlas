@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useTeamsHost } from "./auth/useTeamsHost";
 import { DiagramRoute } from "./routes/DiagramRoute";
 import { EditorHomePage } from "./routes/EditorHomePage";
@@ -24,8 +24,10 @@ function App() {
     );
   }
 
+  const Router = window.location.protocol === "file:" ? HashRouter : BrowserRouter;
+
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
         {inTeams ? (
           <>
@@ -38,7 +40,7 @@ function App() {
           <Route path="*" element={<EditorHomePage />} />
         )}
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 

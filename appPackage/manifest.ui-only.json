@@ -14,8 +14,8 @@
     "outline": "outline.png"
   },
   "name": {
-    "short": "EOS Architetture",
-    "full": "EOS Architetture - Diagrammi e ADR"
+    "short": "Atlas",
+    "full": "Atlas - Diagrammi e ADR"
   },
   "description": {
     "short": "Diagrammi architetturali e ADR per progetto",

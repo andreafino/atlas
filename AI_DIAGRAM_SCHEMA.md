@@ -1,4 +1,4 @@
-# Schema JSON per generare un diagramma EOS Architetture con un'AI
+# Schema JSON per generare un diagramma Atlas con un'AI
 
 ## Come usare questo documento
 
@@ -6,7 +6,7 @@
 2. Subito dopo, nello stesso messaggio, descrivi in linguaggio naturale l'architettura o il flusso che vuoi rappresentare (sistemi coinvolti, come comunicano, eventuali passi di un processo).
 3. Chiedi esplicitamente che la risposta sia **solo il JSON**, senza testo intorno e senza blocco di codice markdown (niente ```` ```json ```` iniziale/finale) — serve un file `.json` pulito, non una spiegazione.
 4. Salva la risposta in un file con estensione `.json`.
-5. In EOS Architetture, apri quel file con **"Apri file"** nella barra degli strumenti dell'editor (icona cartella, in basso a destra). Il diagramma si apre direttamente, senza bisogno di convertirlo prima.
+5. In Atlas, apri quel file con **"Apri file"** nella barra degli strumenti dell'editor (icona cartella, in basso a destra). Il diagramma si apre direttamente, senza bisogno di convertirlo prima.
 
 Se il risultato non si apre o è disordinato, incolla il messaggio di errore (o una descrizione del problema visivo) nella stessa conversazione con l'AI e chiedi una correzione — più avanti in questo documento trovi le regole che probabilmente sono state violate.
 
@@ -129,7 +129,7 @@ L'app **non ricalcola automaticamente** le coordinate all'importazione: usa esat
 
 ## Esempio minimo completo
 
-Due bande, tre entità, un collegamento, un flusso, una tecnologia, autenticazione vuota. Puoi incollarlo in EOS Architetture con "Apri file" per verificare subito che il formato funzioni, prima ancora di chiedere un diagramma vero a un'AI.
+Due bande, tre entità, un collegamento, un flusso, una tecnologia, autenticazione vuota. Puoi incollarlo in Atlas con "Apri file" per verificare subito che il formato funzioni, prima ancora di chiedere un diagramma vero a un'AI.
 
 ```json
 {

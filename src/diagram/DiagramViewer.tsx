@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Diagram, Point } from "../types/diagram";
 import { entityById } from "../data/loadDiagram";
 import { useDiagramStore } from "../store/useDiagramStore";
@@ -112,7 +112,7 @@ export function DiagramViewer({ diagram, title, subtitle, inTeams }: Props) {
     }
   };
 
-  const handleSaveFile = async (): Promise<boolean> => {
+  const handleSaveFile = useCallback(async (): Promise<boolean> => {
     try {
       const state = useDiagramStore.getState();
       const data = toFileContents({ versions: state.versions, index: state.index, title: displayTitle });
@@ -127,7 +127,7 @@ export function DiagramViewer({ diagram, title, subtitle, inTeams }: Props) {
       setFileMessage(err instanceof Error ? err.message : "Salvataggio del file non riuscito.");
       return false;
     }
-  };
+  }, [displayTitle, fileHandle]);
 
   const resetToNewDiagram = () => {
     const version: Version = { numero: 0, diagramma: EMPTY_DIAGRAM, descrizione: "Nuovo diagramma", origine: "manuale", autore: "Utente", data: new Date().toISOString() };
@@ -175,26 +175,49 @@ export function DiagramViewer({ diagram, title, subtitle, inTeams }: Props) {
     setBandPopover(null);
   }, [mode]);
 
-  // Ctrl/Cmd+Z annulla (Ctrl/Cmd+Shift+Z o Ctrl/Cmd+Y ripete), tranne mentre si scrive in un campo.
+  // Ctrl/Cmd+Z annulla (Ctrl/Cmd+Shift+Z o Ctrl/Cmd+Y ripete), Ctrl/Cmd+S salva, Canc elimina la
+  // selezione corrente — tutto disattivo mentre si scrive in un campo.
   useEffect(() => {
     const handler = (evt: KeyboardEvent) => {
-      if (!(evt.ctrlKey || evt.metaKey)) return;
       const target = evt.target as HTMLElement | null;
       const typing = !!target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
       if (typing) return;
-      const key = evt.key.toLowerCase();
-      if (key === "z") {
-        evt.preventDefault();
-        if (evt.shiftKey) redo();
-        else undo();
-      } else if (key === "y") {
-        evt.preventDefault();
-        redo();
+
+      if (evt.ctrlKey || evt.metaKey) {
+        const key = evt.key.toLowerCase();
+        if (key === "z") {
+          evt.preventDefault();
+          if (evt.shiftKey) redo();
+          else undo();
+        } else if (key === "y") {
+          evt.preventDefault();
+          redo();
+        } else if (key === "s") {
+          evt.preventDefault();
+          void handleSaveFile();
+        }
+        return;
+      }
+
+      if (evt.key === "Delete") {
+        if (sel?.kind === "entity") {
+          evt.preventDefault();
+          apply(deleteElement("entity", sel.id));
+          clearSel();
+        } else if (sel?.kind === "tech") {
+          evt.preventDefault();
+          apply(deleteElement("technology", sel.id));
+          clearSel();
+        } else if (selectedEdgeId) {
+          evt.preventDefault();
+          apply(deleteElement("edge", selectedEdgeId));
+          setSelectedEdgeId(null);
+        }
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [undo, redo]);
+  }, [undo, redo, handleSaveFile, sel, selectedEdgeId, apply, clearSel]);
 
   const handleEntityClick = (id: string, evt: { clientX: number; clientY: number }) => {
     if (mode === "select") {
@@ -297,9 +320,8 @@ export function DiagramViewer({ diagram, title, subtitle, inTeams }: Props) {
   return (
     <div style={{ height: "100vh", display: "grid", gridTemplateRows: "auto minmax(0,1fr)", background: "var(--paper)", color: "var(--ink)", fontFamily: "'Source Sans 3','Segoe UI',system-ui,sans-serif", fontSize: 15, lineHeight: 1.45 }}>
       <header style={{ display: "flex", alignItems: "center", gap: 20, padding: "14px 24px", borderBottom: "3px solid var(--accent)" }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 6, flex: "none", fontFamily: "'Barlow Semi Condensed',sans-serif", lineHeight: 1 }}>
-          <span style={{ fontWeight: 700, fontSize: 30, letterSpacing: ".02em", color: "var(--accent)" }}>EOS</span>
-          <span style={{ fontWeight: 600, fontSize: 18 }}>Architetture</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: "none", fontFamily: "'Barlow Semi Condensed',sans-serif", lineHeight: 1 }}>
+          <span style={{ fontWeight: 700, fontSize: 30, letterSpacing: ".02em", color: "var(--accent)" }}>Atlas</span>
         </div>
         <div style={{ width: 1, alignSelf: "stretch", background: "var(--rule)" }} />
         <div style={{ display: "grid", gap: 2, minWidth: 0, flex: 1 }}>

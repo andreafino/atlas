@@ -16,8 +16,8 @@ export function TeamsNav() {
       <button type="button" aria-label="Team" style={iconBtn(false)} disabled>
         <TeamIcon size={22} />
       </button>
-      <Link to="/" aria-label="Architetture EOS – tutti i progetti" style={logoStyle}>
-        EOS
+      <Link to="/" aria-label="Atlas – tutti i progetti" style={logoStyle}>
+        Atlas
       </Link>
     </nav>
   );

@@ -1,8 +1,11 @@
 import type { Diagram } from "../types/diagram";
 import type { Version } from "../store/diagramStore";
 
+const CURRENT_KIND = "atlas-diagramma";
+const LEGACY_KINDS = ["eos-architetture-diagramma"];
+
 export interface DiagramFileV1 {
-  kind: "eos-architetture-diagramma";
+  kind: "atlas-diagramma";
   formatVersion: 1;
   title?: string;
   versions: Version[];
@@ -10,7 +13,7 @@ export interface DiagramFileV1 {
 }
 
 export function toFileContents(state: { versions: Version[]; index: number; title?: string }): DiagramFileV1 {
-  return { kind: "eos-architetture-diagramma", formatVersion: 1, title: state.title, versions: state.versions, index: state.index };
+  return { kind: CURRENT_KIND, formatVersion: 1, title: state.title, versions: state.versions, index: state.index };
 }
 
 // samples/e-commerce-bc.json (e la sua copia src/data/e-commerce-bc.json) sono diagrammi "grezzi":
@@ -27,13 +30,13 @@ export function fromFileContents(json: unknown): { diagram: Diagram; versions: V
   }
   const data = json as Record<string, unknown>;
 
-  if (data.kind !== "eos-architetture-diagramma") {
+  if (data.kind !== CURRENT_KIND && !LEGACY_KINDS.includes(data.kind as string)) {
     if (isRawDiagramShape(data)) {
       const diagram = data as unknown as Diagram;
       const version: Version = { numero: 0, diagramma: diagram, descrizione: "Diagramma importato", origine: "manuale", autore: "Utente", data: new Date().toISOString() };
       return { diagram, versions: [version], index: 0 };
     }
-    throw new Error("Il file non è un diagramma EOS Architetture valido (né nel formato con storico versioni, né come diagramma grezzo con bands/entities/edges).");
+    throw new Error("Il file non è un diagramma Atlas valido (né nel formato con storico versioni, né come diagramma grezzo con bands/entities/edges).");
   }
   if (data.formatVersion !== 1) {
     throw new Error(`Versione di formato non supportata: ${String(data.formatVersion)}. Questa versione dell'app gestisce solo il formato 1.`);

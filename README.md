@@ -1,4 +1,4 @@
-# EOS Architetture
+# Atlas
 
 Portale per gli schemi architetturali e i documenti del Solution Architect, organizzati per progetto.
 
@@ -20,4 +20,26 @@ Vedi `SPEC.md` per la specifica funzionale e `CLAUDE.md` per le istruzioni di sv
 ```bash
 npm install
 npm run dev
+```
+
+## App desktop (Electron)
+
+```bash
+npm run dev:electron
+```
+
+Avvia il dev server Vite e apre l'app in una finestra Electron, con hot reload.
+
+```bash
+npm run build:electron
+```
+
+Compila il frontend e genera l'installer Windows (NSIS) in `release/`.
+
+Se cambi `icon.png` nella root del progetto, rigenera le icone usate dall'app desktop
+(`build/icon.ico` per l'installer, `build/icon.png` per l'icona della finestra) prima di
+lanciare `build:electron`:
+
+```bash
+node scripts/make-icon.cjs
 ```
