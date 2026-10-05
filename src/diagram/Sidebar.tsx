@@ -158,7 +158,17 @@ const groupTitle: CSSProperties = {
   padding: "14px 6px 6px",
 };
 
-function FlowsTab({ diagram, sel, hop, setHop, playing, select, togglePlay, nextHop, prevHop }: Omit<Props, "tab" | "setTab" | "onUpdateEntity" | "onDeleteEntity" | "onCollapse" | "onNewTechnology">) {
+function FlowsTab({
+  diagram,
+  sel,
+  hop,
+  setHop,
+  playing,
+  select,
+  togglePlay,
+  nextHop,
+  prevHop,
+}: Omit<Props, "tab" | "setTab" | "onUpdateEntity" | "onDeleteEntity" | "onAddEntityModule" | "onUpdateEntityModule" | "onDeleteEntityModule" | "onEditEntityIcon" | "onEditTechnologyIcon" | "onCollapse" | "onNewTechnology">) {
   const groups = groupBy(diagram.flows, (f) => f.g);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const toggleGroup = (name: string) => {
