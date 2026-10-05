@@ -22,16 +22,19 @@ Vedi `SPEC.md` per la specifica funzionale e `CLAUDE.md` per le istruzioni di sv
 
 ## Funzionalità
 
-### Editor del diagramma
+### Esplorare il diagramma
 
-<img src="docs/assets/demo-editor.svg" alt="Demo animata dell'editor: bande, entità, collegamenti, zoom e pan" width="100%" />
+<img src="docs/assets/demo-exploring.gif" alt="Screen recording: selezione di un'entità e di una tecnologia, zoom/pan, cambio tema" width="100%" />
 
 - **Diagramma interattivo** organizzato in bande (contenitori), entità con icona o monogramma, collegamenti etichettati (anche bidirezionali) e dettagli interni per entità (livello "component").
+- Cliccando un'entità o una tecnologia si **evidenziano i collegamenti diretti** e il pannello laterale ne mostra i dettagli.
 - **Catalogo icone** con oltre 600 servizi Azure e 300 Microsoft 365/Teams/Power Platform, più un dialog di selezione a tile per cambiare icona in un clic.
 - **Zoom e pan** del canvas, tema chiaro/scuro.
 - **Tecnologie trasversali** e matrice di autenticazione (identità gestita, token, secret, permessi delegati) collegate alle entità.
 
 ### Modifica manuale
+
+<img src="docs/assets/demo-editing.gif" alt="Screen recording: creazione di un'entità, collegamento a un'altra entità, storico versioni e annulla" width="100%" />
 
 - Aggiungi, sposta ed elimina entità, contenitori e collegamenti direttamente sul disegno; ridimensiona i contenitori e riancora i collegamenti trascinandoli.
 - **Annulla/ripeti** e **storico versioni** navigabile, con snapshot di ogni modifica (manuale o generata dalla chat).
@@ -39,7 +42,7 @@ Vedi `SPEC.md` per la specifica funzionale e `CLAUDE.md` per le istruzioni di sv
 
 ### Riproduzione dei flussi
 
-<img src="docs/assets/demo-flow.svg" alt="Demo animata della riproduzione di un flusso passo-passo" width="100%" />
+<img src="docs/assets/demo-flow-playback.gif" alt="Screen recording: riproduzione automatica di un flusso passo-passo" width="100%" />
 
 - I flussi (sequenze di passi tra entità) si **riproducono passo-passo**, con evidenziazione del collegamento, delle entità e degli eventuali dettagli interni coinvolti in ciascun passo.
 
@@ -63,6 +66,8 @@ Vedi `SPEC.md` per la specifica funzionale e `CLAUDE.md` per le istruzioni di sv
 ## Generare un diagramma con un'AI
 
 <img src="docs/assets/demo-ai-workflow.svg" alt="Schema del flusso: schema + descrizione -> AI -> JSON -> Apri file in Atlas" width="100%" />
+
+<sub>Schema illustrativo del flusso (i primi passi avvengono fuori da Atlas, in una chat AI esterna).</sub>
 
 Atlas legge un formato JSON documentato riga per riga in [`AI_DIAGRAM_SCHEMA.md`](AI_DIAGRAM_SCHEMA.md). Il flusso consigliato per partire da zero è:
 
