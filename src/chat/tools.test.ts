@@ -64,24 +64,36 @@ describe("chat tools", () => {
     expect(() => tool.execute({ edgeId: "zzz", etichetta: "x" }, d)).toThrow();
   });
 
-  it("addFlow costruisce i passi come tuple e trova l'edgeId esistente", () => {
+  it("addFlow crea un flusso vuoto e restituisce il suo id", () => {
     const d = fixture();
-    const tool = findChatTool("addFlow")!;
-    const command = tool.execute(
-      { titolo: "Flusso di prova", gruppo: "Gruppo", dove: "Ovunque", passi: [{ da: "a", a: "b", etichetta: "passo 1" }] },
-      d
-    );
+    const command = findChatTool("addFlow")!.execute({ titolo: "Flusso di prova", gruppo: "Gruppo", dove: "Ovunque" }, d);
     const next = command.apply(d);
     expect(next.flows).toHaveLength(1);
-    expect(next.flows[0].h[0]).toEqual(["a", "b", "e1", 1, "passo 1"]);
+    expect(next.flows[0].h).toEqual([]);
+    expect(command.output).toEqual({ id: next.flows[0].id });
   });
 
-  it("addFlow lancia un errore se un'entità del passo non esiste", () => {
+  it("addFlowStep aggiunge un passo come tupla e trova l'edgeId esistente", () => {
     const d = fixture();
-    const tool = findChatTool("addFlow")!;
+    const flowCommand = findChatTool("addFlow")!.execute({ titolo: "Flusso", gruppo: "G", dove: "W" }, d);
+    const withFlow = flowCommand.apply(d);
+    const flowId = withFlow.flows[0].id;
+    const stepCommand = findChatTool("addFlowStep")!.execute({ flowId, da: "a", a: "b", etichetta: "passo 1" }, withFlow);
+    const next = stepCommand.apply(withFlow);
+    expect(next.flows[0].h).toEqual([["a", "b", "e1", 1, "passo 1"]]);
+  });
+
+  it("addFlowStep lancia un errore se un'entità del passo non esiste", () => {
+    const d = fixture();
+    const withFlow = findChatTool("addFlow")!.execute({ titolo: "Flusso", gruppo: "G", dove: "W" }, d).apply(d);
     expect(() =>
-      tool.execute({ titolo: "Flusso", gruppo: "G", dove: "W", passi: [{ da: "a", a: "zzz", etichetta: "x" }] }, d)
+      findChatTool("addFlowStep")!.execute({ flowId: withFlow.flows[0].id, da: "a", a: "zzz", etichetta: "x" }, withFlow)
     ).toThrow();
+  });
+
+  it("addFlowStep lancia un errore se il flusso non esiste", () => {
+    const d = fixture();
+    expect(() => findChatTool("addFlowStep")!.execute({ flowId: "nope", da: "a", a: "b", etichetta: "x" }, d)).toThrow("Nessun flusso");
   });
 
   it("addTechnology collega le entità indicate", () => {

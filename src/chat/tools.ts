@@ -1,9 +1,27 @@
-import type { Diagram, FlowStepRaw } from "../types/diagram";
+import type { Diagram, FlowStepRaw, Technology } from "../types/diagram";
 import type { Command } from "../commands/types";
 import type { DeletableKind } from "../commands/commands";
-import { addBand, addEdge, addEntity, addEntityModule, addFlow, addTechnology, deleteElement, deleteEntityModule, moveEntity, updateEdge, updateEntity, updateEntityModule } from "../commands/commands";
+import {
+  addBand,
+  addEdge,
+  addEntity,
+  addEntityModule,
+  addFlow,
+  addFlowStep,
+  addTechnology,
+  deleteBand,
+  deleteElement,
+  deleteEntityModule,
+  moveEntity,
+  updateBand,
+  updateEdge,
+  updateEntity,
+  updateEntityModule,
+  updateTechnology,
+} from "../commands/commands";
 import { DEFAULT_ENTITY_HEIGHT, clampEntityPosition, midpointOfPath, orthogonalEdgePath } from "../diagram/geometry";
 import { monogram, slugify, uniqueId } from "../diagram/ids";
+import { ICON_CATALOG, SEARCHABLE_ICONS } from "../diagram/iconCatalog";
 import type { AnthropicTool } from "./anthropicClient";
 
 export interface ChatTool {
@@ -43,6 +61,18 @@ function findEdgeBetween(diagram: Diagram, aId: string, bId: string): string | n
   return edge?.id ?? null;
 }
 
+// Valida un id icona contro il catalogo curato (ICON_CATALOG) e quello esteso Azure/Microsoft 365/loghi
+// (SEARCHABLE_ICONS), così un id inventato fallisce subito con un messaggio utile invece di produrre
+// un'icona rotta in silenzio. Usato da addEntity/updateEntity/addTechnology/updateTechnology.
+function validateIcon(icon: string | undefined): string | undefined {
+  if (!icon) return undefined;
+  const known = ICON_CATALOG.some((i) => i.id === icon) || SEARCHABLE_ICONS.some((i) => i.id === icon);
+  if (!known) throw new Error(`Icona sconosciuta "${icon}". Usa lo strumento listIcons per cercare un id valido.`);
+  return icon;
+}
+
+const ICON_PARAM_DESCRIPTION = "Id icona dal catalogo (usa lo strumento listIcons per cercarlo); se omessa si usa un monogramma dal nome";
+
 const toolAddEntity: ChatTool = {
   name: "addEntity",
   description: "Aggiunge una nuova entità (servizio, sistema, componente) a un contenitore esistente del diagramma.",
@@ -53,6 +83,7 @@ const toolAddEntity: ChatTool = {
       banda: { type: "string", description: "Etichetta esatta del contenitore in cui inserirla" },
       sottotitolo: { type: "string", description: "Sottotitolo opzionale" },
       descrizione: { type: "string", description: "Descrizione opzionale" },
+      icona: { type: "string", description: ICON_PARAM_DESCRIPTION },
       x: { type: "number", description: "Posizione X opzionale; se omessa viene calcolata in coda al contenitore" },
       y: { type: "number", description: "Posizione Y opzionale; se omessa viene calcolata in coda al contenitore" },
     },
@@ -63,6 +94,7 @@ const toolAddEntity: ChatTool = {
     const bandaLabel = String(input.banda ?? "");
     if (!nome) throw new Error("Il nome dell'entità non può essere vuoto.");
     const band = requireBand(diagram, bandaLabel);
+    const icon = validateIcon(typeof input.icona === "string" ? input.icona : undefined);
     const id = uniqueId(slugify(nome), (candidate) => diagram.entities.some((e) => e.id === candidate));
 
     let x: number;
@@ -72,10 +104,11 @@ const toolAddEntity: ChatTool = {
       x = placed.x;
       y = placed.y;
     } else {
-      const inBand = diagram.entities.filter((e) => e.band === band.l).length;
-      const placed = clampEntityPosition(band, band.x + 24, band.y + 48 + inBand * (DEFAULT_ENTITY_HEIGHT + 16));
-      x = placed.x;
-      y = placed.y;
+      const bottom = diagram.entities
+        .filter((e) => e.band === band.l)
+        .reduce((max, e) => Math.max(max, e.y + (e.h ?? DEFAULT_ENTITY_HEIGHT)), band.y + 24);
+      x = band.x + 24;
+      y = bottom + 16;
     }
 
     const sottotitolo = typeof input.sottotitolo === "string" ? input.sottotitolo.trim() : "";
@@ -87,7 +120,8 @@ const toolAddEntity: ChatTool = {
       band: band.l,
       x,
       y,
-      mono: monogram(nome),
+      icon,
+      mono: icon ? undefined : monogram(nome),
       s: sottotitolo ? [sottotitolo] : undefined,
       desc: descrizione || undefined,
     });
@@ -139,6 +173,50 @@ const toolAddBand: ChatTool = {
       y = 0;
     }
     return addBand({ l: etichetta, x: Math.round(x), y: Math.round(y), w: 280, h: 160 });
+  },
+};
+
+const toolUpdateBand: ChatTool = {
+  name: "updateBand",
+  description: "Rinomina o ridimensiona/riposiziona un contenitore esistente. Se ne cambi l'etichetta, le entità al suo interno vengono riassegnate automaticamente.",
+  input_schema: {
+    type: "object",
+    properties: {
+      etichetta: { type: "string", description: "Etichetta attuale del contenitore" },
+      nuovaEtichetta: { type: "string" },
+      x: { type: "number" },
+      y: { type: "number" },
+      w: { type: "number" },
+      h: { type: "number" },
+    },
+    required: ["etichetta"],
+  },
+  execute(input, diagram) {
+    const etichetta = String(input.etichetta ?? "");
+    requireBand(diagram, etichetta);
+    const patch: { l?: string; x?: number; y?: number; w?: number; h?: number } = {};
+    if (typeof input.nuovaEtichetta === "string" && input.nuovaEtichetta.trim()) patch.l = input.nuovaEtichetta.trim();
+    if (typeof input.x === "number") patch.x = Math.round(input.x);
+    if (typeof input.y === "number") patch.y = Math.round(input.y);
+    if (typeof input.w === "number") patch.w = Math.round(input.w);
+    if (typeof input.h === "number") patch.h = Math.round(input.h);
+    return updateBand(etichetta, patch);
+  },
+};
+
+const toolDeleteBand: ChatTool = {
+  name: "deleteBand",
+  description:
+    "Elimina un contenitore INSIEME a tutte le entità che contiene, ai loro collegamenti e ai riferimenti nelle tecnologie. Operazione distruttiva: verifica prima il contenuto con getDiagram o listEntities.",
+  input_schema: {
+    type: "object",
+    properties: { etichetta: { type: "string", description: "Etichetta esatta del contenitore da eliminare" } },
+    required: ["etichetta"],
+  },
+  execute(input, diagram) {
+    const etichetta = String(input.etichetta ?? "");
+    requireBand(diagram, etichetta);
+    return deleteBand(etichetta);
   },
 };
 
@@ -200,56 +278,54 @@ const toolUpdateEdge: ChatTool = {
   },
 };
 
-interface FlowStepInput {
-  da: string;
-  a: string;
-  etichetta: string;
-  direzione?: 1 | -1;
-}
-
 const toolAddFlow: ChatTool = {
   name: "addFlow",
-  description: "Aggiunge un nuovo flusso (sequenza di passi tra entità) al diagramma.",
+  description: "Crea un flusso vuoto (senza passi) e restituisce il suo id. Poi aggiungi i passi con addFlowStep.",
   input_schema: {
     type: "object",
     properties: {
       titolo: { type: "string" },
       gruppo: { type: "string" },
       dove: { type: "string", description: "Dove si svolge il flusso (sistemi coinvolti)" },
-      passi: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            da: { type: "string", description: "Id entità di partenza del passo" },
-            a: { type: "string", description: "Id entità di arrivo del passo" },
-            etichetta: { type: "string", description: "Descrizione del passo" },
-            direzione: { type: "integer", enum: [1, -1], description: "1 se il collegamento va letto da 'da' verso 'a', -1 se al contrario" },
-          },
-          required: ["da", "a", "etichetta"],
-        },
-      },
     },
-    required: ["titolo", "gruppo", "dove", "passi"],
+    required: ["titolo", "gruppo", "dove"],
   },
   execute(input, diagram) {
     const titolo = String(input.titolo ?? "").trim();
     if (!titolo) throw new Error("Il titolo del flusso non può essere vuoto.");
     const gruppo = String(input.gruppo ?? "").trim() || "Flussi";
     const dove = String(input.dove ?? "").trim();
-    const passi = Array.isArray(input.passi) ? (input.passi as FlowStepInput[]) : [];
-    if (passi.length === 0) throw new Error("Un flusso deve avere almeno un passo.");
-
-    const h: FlowStepRaw[] = passi.map((step) => {
-      requireEntity(diagram, step.da);
-      requireEntity(diagram, step.a);
-      const edgeId = findEdgeBetween(diagram, step.da, step.a);
-      const direzione = step.direzione === -1 ? -1 : 1;
-      return [step.da, step.a, edgeId, direzione, String(step.etichetta ?? "").trim()];
-    });
-
     const id = uniqueId(`f-${slugify(titolo)}`, (candidate) => diagram.flows.some((f) => f.id === candidate));
-    return addFlow({ id, g: gruppo, t: titolo, w: dove, h });
+    return addFlow({ id, g: gruppo, t: titolo, w: dove, h: [] });
+  },
+};
+
+const toolAddFlowStep: ChatTool = {
+  name: "addFlowStep",
+  description:
+    "Aggiunge un passo in coda a un flusso esistente. Entità di partenza e di arrivo devono esistere; se c'è un collegamento tra le due entità viene associato automaticamente.",
+  input_schema: {
+    type: "object",
+    properties: {
+      flowId: { type: "string", description: "Id del flusso (restituito da addFlow)" },
+      da: { type: "string", description: "Id entità di partenza del passo" },
+      a: { type: "string", description: "Id entità di arrivo del passo" },
+      etichetta: { type: "string", description: "Descrizione del passo" },
+      direzione: { type: "integer", enum: [1, -1], description: "1 se il collegamento va letto da 'da' verso 'a' (default), -1 se al contrario" },
+    },
+    required: ["flowId", "da", "a", "etichetta"],
+  },
+  execute(input, diagram) {
+    const flowId = String(input.flowId ?? "");
+    if (!diagram.flows.some((f) => f.id === flowId)) throw new Error(`Nessun flusso con id "${flowId}".`);
+    const da = String(input.da ?? "");
+    const a = String(input.a ?? "");
+    requireEntity(diagram, da);
+    requireEntity(diagram, a);
+    const edgeId = findEdgeBetween(diagram, da, a);
+    const direzione: 1 | -1 = input.direzione === -1 ? -1 : 1;
+    const step: FlowStepRaw = [da, a, edgeId, direzione, String(input.etichetta ?? "").trim()];
+    return addFlowStep(flowId, step);
   },
 };
 
@@ -262,6 +338,7 @@ const toolAddTechnology: ChatTool = {
       nome: { type: "string" },
       gruppo: { type: "string" },
       descrizione: { type: "string" },
+      icona: { type: "string", description: ICON_PARAM_DESCRIPTION },
       entityIds: { type: "array", items: { type: "string" } },
     },
     required: ["nome", "gruppo", "descrizione", "entityIds"],
@@ -271,21 +348,58 @@ const toolAddTechnology: ChatTool = {
     if (!nome) throw new Error("Il nome della tecnologia non può essere vuoto.");
     const entityIds = Array.isArray(input.entityIds) ? input.entityIds.map(String) : [];
     entityIds.forEach((id) => requireEntity(diagram, id));
+    const icon = validateIcon(typeof input.icona === "string" ? input.icona : undefined);
     const id = uniqueId(slugify(nome), (candidate) => diagram.technologies.some((t) => t.id === candidate));
     return addTechnology({
       id,
       g: String(input.gruppo ?? "").trim() || "Tecnologie",
       n: nome,
-      mono: monogram(nome),
+      icon,
+      mono: icon ? undefined : monogram(nome),
       e: entityIds,
       d: String(input.descrizione ?? "").trim(),
     });
   },
 };
 
+const toolUpdateTechnology: ChatTool = {
+  name: "updateTechnology",
+  description: "Modifica nome, gruppo, descrizione o icona di una tecnologia esistente.",
+  input_schema: {
+    type: "object",
+    properties: {
+      technologyId: { type: "string" },
+      nome: { type: "string" },
+      gruppo: { type: "string" },
+      descrizione: { type: "string" },
+      icona: { type: "string", description: `${ICON_PARAM_DESCRIPTION}; passa una stringa vuota per rimuoverla e tornare al monogramma` },
+    },
+    required: ["technologyId"],
+  },
+  execute(input, diagram) {
+    const technologyId = String(input.technologyId ?? "");
+    const tech = diagram.technologies.find((t) => t.id === technologyId);
+    if (!tech) throw new Error(`Nessuna tecnologia con id "${technologyId}".`);
+    const patch: Partial<Technology> = {};
+    if (typeof input.nome === "string" && input.nome.trim()) patch.n = input.nome.trim();
+    if (typeof input.gruppo === "string" && input.gruppo.trim()) patch.g = input.gruppo.trim();
+    if (typeof input.descrizione === "string") patch.d = input.descrizione.trim();
+    if (typeof input.icona === "string") {
+      if (input.icona === "") {
+        patch.icon = undefined;
+        patch.mono = tech.mono ?? monogram(tech.n);
+      } else {
+        patch.icon = validateIcon(input.icona);
+        patch.mono = undefined;
+      }
+    }
+    return updateTechnology(technologyId, patch);
+  },
+};
+
 const toolUpdateEntity: ChatTool = {
   name: "updateEntity",
-  description: "Modifica nome, sottotitolo o descrizione di un'entità esistente.",
+  description: "Modifica nome, sottotitolo, descrizione o icona di un'entità esistente.",
   input_schema: {
     type: "object",
     properties: {
@@ -293,16 +407,26 @@ const toolUpdateEntity: ChatTool = {
       nome: { type: "string" },
       sottotitolo: { type: "string" },
       descrizione: { type: "string" },
+      icona: { type: "string", description: `${ICON_PARAM_DESCRIPTION}; passa una stringa vuota per rimuoverla e tornare al monogramma` },
     },
     required: ["entityId"],
   },
   execute(input, diagram) {
     const entityId = String(input.entityId ?? "");
-    requireEntity(diagram, entityId);
-    const patch: { n?: string; s?: string[]; desc?: string } = {};
+    const entity = requireEntity(diagram, entityId);
+    const patch: { n?: string; s?: string[]; desc?: string; icon?: string; mono?: string } = {};
     if (typeof input.nome === "string" && input.nome.trim()) patch.n = input.nome.trim();
     if (typeof input.sottotitolo === "string") patch.s = input.sottotitolo.trim() ? [input.sottotitolo.trim()] : undefined;
     if (typeof input.descrizione === "string") patch.desc = input.descrizione.trim() || undefined;
+    if (typeof input.icona === "string") {
+      if (input.icona === "") {
+        patch.icon = undefined;
+        patch.mono = entity.mono ?? monogram(entity.n);
+      } else {
+        patch.icon = validateIcon(input.icona);
+        patch.mono = undefined;
+      }
+    }
     return updateEntity(entityId, patch);
   },
 };
@@ -408,10 +532,14 @@ export const CHAT_TOOLS: ChatTool[] = [
   toolAddEntity,
   toolMoveEntity,
   toolAddBand,
+  toolUpdateBand,
+  toolDeleteBand,
   toolAddEdge,
   toolUpdateEdge,
   toolAddFlow,
+  toolAddFlowStep,
   toolAddTechnology,
+  toolUpdateTechnology,
   toolUpdateEntity,
   toolAddEntityModule,
   toolUpdateEntityModule,

@@ -2,7 +2,7 @@ import { create, type StoreApi, type UseBoundStore } from "zustand";
 import type { Diagram } from "../types/diagram";
 import type { Command } from "../commands/types";
 
-export type VersionOrigin = "manuale" | "chat";
+export type VersionOrigin = "manuale" | "chat" | "mcp";
 
 export interface Version {
   numero: number;

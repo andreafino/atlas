@@ -51,6 +51,16 @@ Vedi `SPEC.md` per la specifica funzionale e `CLAUDE.md` per le istruzioni di sv
 - Pannello di chat basato su **Claude (Anthropic)** con *tool calling*: l'assistente usa esattamente gli stessi comandi dell'editor manuale (`addEntity`, `addEdge`, `addFlow`, `addTechnology`, `updateEntity`, `deleteElement`, ...), quindi annulla/ripeti e storico versioni funzionano allo stesso modo sia che la modifica arrivi dalla UI sia dalla chat.
 - Richiede una chiave API Anthropic personale, inserita e salvata localmente dal pannello della chat.
 
+### Assistente esterno via MCP (solo app desktop)
+
+- Il diagramma aperto può essere esposto come **server MCP** (Model Context Protocol), così un'AI esterna compatibile (Claude, Copilot Studio o altri client MCP) può leggerlo e modificarlo con le stesse operazioni dell'editor.
+- Dal pannello **MCP** si avvia il server locale (solo `127.0.0.1`), si genera e si rigenera il token di accesso, e si attiva il permesso di modifica (default: sola lettura).
+- Il pulsante **Avvia tunnel** espone il server tramite Microsoft Dev Tunnels, con un URL pubblico da dare al client.
+- Le modifiche via MCP compaiono nello storico versioni con origine `mcp`, quindi annulla/ripeti funzionano come per le modifiche manuali.
+- Strumenti disponibili: lettura (`getDiagram`, `listEntities`, `getEntity`, `listFlows`, `listIcons`) e modifica di contenitori, entità, dettagli interni, collegamenti, flussi e tecnologie, con icone dal catalogo.
+
+Istruzioni complete per l'installazione, il tunnel e la configurazione dei client: [`MCP_SETUP.md`](MCP_SETUP.md).
+
 ### App desktop
 
 - Build Electron con installer Windows (NSIS), hot reload in sviluppo.

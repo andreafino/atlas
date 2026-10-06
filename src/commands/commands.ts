@@ -1,4 +1,4 @@
-import type { Band, Diagram, Edge, Entity, EntityModule, Flow, Technology } from "../types/diagram";
+import type { Band, Diagram, Edge, Entity, EntityModule, Flow, FlowStepRaw, Technology } from "../types/diagram";
 import type { Command } from "./types";
 import { type BandResizeEdges, entityHeightForModuleCount, growBandToInclude, orthogonalEdgePath, orthogonalPathBetween, resizeBand, sameBandLabel, sideOfBorderPoint, sideOfPoint, sidePoint } from "../diagram/geometry";
 
@@ -60,6 +60,38 @@ export function resizeBandManually(label: string, edges: BandResizeEdges, dx: nu
 
 // Sposta un intero contenitore insieme alle entità che gli appartengono, mantenendo attaccati
 // i collegamenti (che vengono ricalcolati come i segmenti dritti bordo-bordo, come per moveEntity).
+// Rinomina e/o riposiziona/ridimensiona esplicitamente un contenitore. Se cambia l'etichetta,
+// tutte le entità che vi appartengono vengono riassegnate alla nuova etichetta nello stesso comando.
+export function updateBand(label: string, patch: Partial<Pick<Band, "l" | "x" | "y" | "w" | "h">>): Command {
+  return {
+    label: `Modifica contenitore "${label}"`,
+    apply: (d) => {
+      const newLabel = patch.l?.trim();
+      const relabel = !!newLabel && !sameBandLabel(newLabel, label);
+      const bands = d.bands.map((b) => (sameBandLabel(b.l, label) ? { ...b, ...patch, l: newLabel || b.l } : b));
+      const entities = relabel ? d.entities.map((e) => (sameBandLabel(e.band, label) ? { ...e, band: newLabel! } : e)) : d.entities;
+      return { ...d, bands, entities };
+    },
+  };
+}
+
+// Elimina un contenitore insieme a tutte le entità al suo interno, i loro collegamenti e i
+// riferimenti nelle tecnologie collegate (stessa cascata di deleteElement("entity", ...), ripetuta
+// per ogni entità del contenitore).
+export function deleteBand(label: string): Command {
+  return {
+    label: `Eliminato contenitore "${label}"`,
+    apply: (d) => {
+      const removedIds = new Set(d.entities.filter((e) => sameBandLabel(e.band, label)).map((e) => e.id));
+      const bands = d.bands.filter((b) => !sameBandLabel(b.l, label));
+      const entities = d.entities.filter((e) => !removedIds.has(e.id));
+      const edges = d.edges.filter((e) => !removedIds.has(e.a) && !removedIds.has(e.b));
+      const technologies = d.technologies.map((t) => ({ ...t, e: t.e.filter((id) => !removedIds.has(id)) }));
+      return { ...d, bands, entities, edges, technologies };
+    },
+  };
+}
+
 export function moveBand(label: string, dx: number, dy: number): Command {
   return {
     label: `Spostato contenitore "${label}"`,
@@ -190,6 +222,14 @@ export function addFlow(flow: Flow): Command {
   return {
     label: `Aggiunto flusso "${flow.t}"`,
     apply: (d) => ({ ...d, flows: [...d.flows, flow] }),
+    output: { id: flow.id },
+  };
+}
+
+export function addFlowStep(flowId: string, step: FlowStepRaw): Command {
+  return {
+    label: `Aggiunto passo al flusso "${flowId}"`,
+    apply: (d) => ({ ...d, flows: d.flows.map((f) => (f.id === flowId ? { ...f, h: [...f.h, step] } : f)) }),
   };
 }
 

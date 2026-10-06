@@ -38,6 +38,8 @@ import { readStoredTheme, writeStoredTheme } from "../theme/themeStorage";
 import { EMPTY_DIAGRAM } from "./emptyDiagram";
 import { ChatIcon, ExpandSidebarIcon, MoonIcon, SunIcon } from "./icons";
 import { ChatPanel } from "../chat/ChatPanel";
+import { connectMcpBridge } from "../mcp/mcpBridge";
+import { McpPanel } from "../mcp/McpPanel";
 
 interface Props {
   diagram: Diagram;
@@ -75,6 +77,10 @@ export function DiagramViewer({ diagram, title, subtitle, inTeams }: Props) {
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(title);
   const [confirmNewOpen, setConfirmNewOpen] = useState(false);
+  const [mcpOpen, setMcpOpen] = useState(false);
+  const hasDesktopApi = typeof window !== "undefined" && !!window.atlasDesktop;
+
+  useEffect(() => connectMcpBridge(), []);
 
   const apply = useDiagramStore((s) => s.apply);
   const undo = useDiagramStore((s) => s.undo);
@@ -386,6 +392,27 @@ export function DiagramViewer({ diagram, title, subtitle, inTeams }: Props) {
             </button>
           ))}
         </div>
+        {hasDesktopApi && (
+          <button
+            onClick={() => setMcpOpen((v) => !v)}
+            title="Assistente esterno (MCP)"
+            aria-label="Assistente esterno (MCP)"
+            style={{
+              border: "1px solid var(--rule)",
+              borderRadius: 8,
+              padding: "6px 10px",
+              fontSize: 13,
+              fontFamily: "'Barlow Semi Condensed',sans-serif",
+              fontWeight: 600,
+              background: mcpOpen ? "var(--accent)" : "var(--panel)",
+              color: mcpOpen ? "#fff" : "var(--ink)",
+              cursor: "pointer",
+              flex: "none",
+            }}
+          >
+            MCP
+          </button>
+        )}
         <button
           onClick={() => setChatOpen((v) => !v)}
           title={chatOpen ? "Chiudi assistente" : "Apri assistente"}
@@ -528,6 +555,8 @@ export function DiagramViewer({ diagram, title, subtitle, inTeams }: Props) {
         </div>
         {chatOpen && <ChatPanel />}
       </div>
+
+      {mcpOpen && hasDesktopApi && <McpPanel onClose={() => setMcpOpen(false)} />}
 
       {entityPopover && (
         <EntityCreateForm
