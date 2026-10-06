@@ -10,7 +10,7 @@
 
 Vedi `SPEC.md` per la specifica funzionale e `CLAUDE.md` per le istruzioni di sviluppo.
 
-> **Stato attuale:** ad oggi è disponibile e utilizzabile solo l'**editor desktop** (app Electron o browser, senza Teams). L'integrazione con Microsoft Teams (SSO, Graph, lista progetti reale) è **in corso** — vedi `TEAMS_SETUP.md`.
+> **Stato attuale:** Vector è un editor di diagrammi architetturali disponibile come app desktop (Electron) e nel browser.
 
 ## Indice
 
@@ -28,7 +28,7 @@ Vedi `SPEC.md` per la specifica funzionale e `CLAUDE.md` per le istruzioni di sv
 
 - **Diagramma interattivo** organizzato in bande (contenitori), entità con icona o monogramma, collegamenti etichettati (anche bidirezionali) e dettagli interni per entità (livello "component").
 - Cliccando un'entità o una tecnologia si **evidenziano i collegamenti diretti** e il pannello laterale ne mostra i dettagli.
-- **Catalogo icone** con oltre 600 servizi Azure e 300 Microsoft 365/Teams/Power Platform, più un dialog di selezione a tile per cambiare icona in un clic.
+- **Catalogo icone** con oltre 600 servizi Azure e 300 icone Microsoft 365/Power Platform, più un dialog di selezione a tile per cambiare icona in un clic.
 - **Zoom e pan** del canvas, tema chiaro/scuro.
 - **Tecnologie trasversali** e matrice di autenticazione (identità gestita, token, secret, permessi delegati) collegate alle entità.
 
@@ -65,19 +65,13 @@ Istruzioni complete per l'installazione, il tunnel e la configurazione dei clien
 
 - Build Electron con installer Windows (NSIS), hot reload in sviluppo.
 
-### In corso (non ancora disponibile)
+### In programma
 
-- App Teams con SSO e Teams JS SDK.
-- Integrazione Microsoft Graph (team, SharePoint, OneNote).
-- Permessi di modifica/lettura basati sui permessi nativi del file.
 - ADR collegati al diagramma o a singoli elementi.
-- Lista progetti/dashboard con dati reali (oggi solo l'editor singolo, senza elenco progetti).
 
 ## Generare un diagramma con un'AI
 
 <img src="docs/assets/demo-ai-workflow.svg" alt="Schema del flusso: schema + descrizione -> AI -> JSON -> Apri file in Vector" width="100%" />
-
-<sub>Schema illustrativo del flusso (i primi passi avvengono fuori da Vector, in una chat AI esterna).</sub>
 
 Vector legge un formato JSON documentato riga per riga in [`AI_DIAGRAM_SCHEMA.md`](AI_DIAGRAM_SCHEMA.md). Il flusso consigliato per partire da zero è:
 
@@ -93,13 +87,10 @@ Il documento dello schema include anche le regole di layout (dimensioni di entit
 ## Stack
 
 - React + TypeScript + Vite (frontend)
-- Azure Functions (backend, SSO/Graph on-behalf-of — vedi `TEAMS_SETUP.md`)
+- Electron (app desktop) e server MCP locale per l'assistente esterno
 - Persistenza su file JSON, non su database relazionale:
-  - fuori Teams: apri/salva un file locale dal browser (File System Access API con fallback a download/upload)
-  - dentro Teams (da costruire): lo stesso file salvato nel sito SharePoint del team via Microsoft Graph, con la cartella/posizione scelta dall'utente
-  - permessi di modifica/lettura: nessuna tabella custom, si usano i permessi nativi del file/cartella (SharePoint quando applicabile)
-  - storico versioni: incluso nello stesso file JSON come array di snapshot (vedi `src/store/diagramStore.ts`), non dipende dal version history di SharePoint
-- Microsoft 365 Agents Toolkit (app Teams)
+  - apri/salva un file locale (File System Access API con fallback a download/upload)
+  - storico versioni: incluso nello stesso file JSON come array di snapshot (vedi `src/store/diagramStore.ts`)
 
 ## Sviluppo
 
