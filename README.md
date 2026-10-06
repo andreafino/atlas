@@ -5,7 +5,7 @@
 <h1 align="center">Vector</h1>
 
 <p align="center">
-  Portale per gli schemi architetturali e i documenti del Solution Architect, organizzati per progetto.
+  Editor di design dei flussi architetturali dei clienti, organizzato per progetto.
 </p>
 
 Vedi `SPEC.md` per la specifica funzionale e `CLAUDE.md` per le istruzioni di sviluppo.
