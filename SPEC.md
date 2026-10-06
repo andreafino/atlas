@@ -1,4 +1,4 @@
-# Atlas – Specifica funzionale
+# Vector – Specifica funzionale
 
 Portale per gli schemi architetturali e i documenti del Solution Architect, organizzati per progetto.
 All'inizio lo usa un solo Solution Architect, poi verrà esteso a tutte le BU di EOS Solutions come standard aziendale.

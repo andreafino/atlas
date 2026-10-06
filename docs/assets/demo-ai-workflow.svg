@@ -61,7 +61,7 @@
     </rect>
     <text x="720" y="122" text-anchor="middle" class="box-title">"Apri file"</text>
     <text x="720" y="138" text-anchor="middle" class="box-sub">nella barra strumenti</text>
-    <text x="720" y="152" text-anchor="middle" class="box-sub">dell'editor Atlas</text>
+    <text x="720" y="152" text-anchor="middle" class="box-sub">dell'editor Vector</text>
   </g>
 
   <!-- Loop back arrow: editor -> integra/modifica -> back to AI chat (manual refine) -->

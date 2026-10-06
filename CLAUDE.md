@@ -1,6 +1,6 @@
 # Istruzioni per Claude Code
 
-Stai sviluppando **Atlas**: un'app Teams, accessibile anche da browser, per gestire diagrammi architetturali e ADR per progetto.
+Stai sviluppando **Vector**: un'app Teams, accessibile anche da browser, per gestire diagrammi architetturali e ADR per progetto.
 
 ## Leggi prima
 1. `SPEC.md`: requisiti e decisioni prese. Non riaprirle senza chiedere.

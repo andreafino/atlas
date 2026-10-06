@@ -42,7 +42,7 @@ export function ProjectListPage() {
       <div style={{ display: "grid", gridTemplateRows: "auto minmax(0,1fr)", minWidth: 0 }}>
         <header style={{ display: "flex", alignItems: "center", gap: 20, padding: "14px 32px", borderBottom: "3px solid var(--accent)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Barlow Semi Condensed',sans-serif", lineHeight: 1 }}>
-            <span style={{ fontWeight: 700, fontSize: 28, letterSpacing: ".02em", color: "var(--accent)" }}>Atlas</span>
+            <span style={{ fontWeight: 700, fontSize: 28, letterSpacing: ".02em", color: "var(--accent)" }}>Vector</span>
           </div>
           <div style={{ width: 1, alignSelf: "stretch", background: "var(--rule)" }} />
           <div style={{ flex: 1, fontFamily: "'Barlow Semi Condensed',sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--accent-ink)" }}>

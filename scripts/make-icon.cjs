@@ -5,7 +5,7 @@ const path = require("node:path");
 const os = require("node:os");
 
 const root = path.join(__dirname, "..");
-const sourcePng = path.join(root, "icon.png");
+const sourcePng = path.join(root, "public", "vector-logo.png");
 const outIco = path.join(root, "build", "icon.ico");
 const outWindowIcon = path.join(root, "build", "icon.png");
 

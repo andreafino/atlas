@@ -1,5 +1,5 @@
 {
-  "name": "atlas",
+  "name": "vector",
   "private": true,
   "version": "1.0.1",
   "type": "module",
@@ -43,8 +43,8 @@
     "wait-on": "^9.5.1"
   },
   "build": {
-    "appId": "com.atlas.architetture",
-    "productName": "Atlas",
+    "appId": "com.vector.architetture",
+    "productName": "Vector",
     "directories": {
       "output": "release"
     },

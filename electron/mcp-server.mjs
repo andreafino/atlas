@@ -49,7 +49,7 @@ export async function startMcpHttpServer({ port, token, listTools, callTool }) {
   const transports = new Map();
 
   function buildServer() {
-    const server = new Server({ name: "atlas", version: "1.0.0" }, { capabilities: { tools: {} } });
+    const server = new Server({ name: "vector", version: "1.0.0" }, { capabilities: { tools: {} } });
     server.setRequestHandler(ListToolsRequestSchema, async () => ({
       tools: listTools().map(({ name, description, input_schema }) => ({ name, description, inputSchema: input_schema })),
     }));

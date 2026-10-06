@@ -78,7 +78,7 @@ export function DiagramViewer({ diagram, title, subtitle, inTeams }: Props) {
   const [titleDraft, setTitleDraft] = useState(title);
   const [confirmNewOpen, setConfirmNewOpen] = useState(false);
   const [mcpOpen, setMcpOpen] = useState(false);
-  const hasDesktopApi = typeof window !== "undefined" && !!window.atlasDesktop;
+  const hasDesktopApi = typeof window !== "undefined" && !!window.vectorDesktop;
 
   useEffect(() => connectMcpBridge(), []);
 
@@ -326,9 +326,7 @@ export function DiagramViewer({ diagram, title, subtitle, inTeams }: Props) {
   return (
     <div style={{ height: "100vh", display: "grid", gridTemplateRows: "auto minmax(0,1fr)", background: "var(--paper)", color: "var(--ink)", fontFamily: "'Source Sans 3','Segoe UI',system-ui,sans-serif", fontSize: 15, lineHeight: 1.45 }}>
       <header style={{ display: "flex", alignItems: "center", gap: 20, padding: "14px 24px", borderBottom: "3px solid var(--accent)" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: "none", fontFamily: "'Barlow Semi Condensed',sans-serif", lineHeight: 1 }}>
-          <span style={{ fontWeight: 700, fontSize: 30, letterSpacing: ".02em", color: "var(--accent)" }}>Atlas</span>
-        </div>
+        <img src={`${import.meta.env.BASE_URL}vector-logo.png`} alt="Vector" width={48} height={48} style={{ display: "block", flex: "none", alignSelf: "center" }} />
         <div style={{ width: 1, alignSelf: "stretch", background: "var(--rule)" }} />
         <div style={{ display: "grid", gap: 2, minWidth: 0, flex: 1 }}>
           <div style={{ fontFamily: "'Barlow Semi Condensed',sans-serif", fontWeight: 600, fontSize: 12, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--accent-ink)" }}>{subtitle}</div>

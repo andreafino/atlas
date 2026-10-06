@@ -36,7 +36,7 @@ export function fromFileContents(json: unknown): { diagram: Diagram; versions: V
       const version: Version = { numero: 0, diagramma: diagram, descrizione: "Diagramma importato", origine: "manuale", autore: "Utente", data: new Date().toISOString() };
       return { diagram, versions: [version], index: 0 };
     }
-    throw new Error("Il file non è un diagramma Atlas valido (né nel formato con storico versioni, né come diagramma grezzo con bands/entities/edges).");
+    throw new Error("Il file non è un diagramma Vector valido (né nel formato con storico versioni, né come diagramma grezzo con bands/entities/edges).");
   }
   if (data.formatVersion !== 1) {
     throw new Error(`Versione di formato non supportata: ${String(data.formatVersion)}. Questa versione dell'app gestisce solo il formato 1.`);

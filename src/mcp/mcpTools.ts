@@ -17,7 +17,7 @@ interface ReadTool {
 const READ_TOOLS: ReadTool[] = [
   {
     name: "getDiagram",
-    description: "Restituisce il diagramma aperto in Atlas completo (bande, entità, collegamenti, flussi, tecnologie, autenticazione) in formato JSON.",
+    description: "Restituisce il diagramma aperto in Vector completo (bande, entità, collegamenti, flussi, tecnologie, autenticazione) in formato JSON.",
     input_schema: { type: "object", properties: {} },
     read: (_input, diagram) => diagram,
   },

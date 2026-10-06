@@ -8,7 +8,7 @@ interface Props {
 const LOCAL_URL = (port: number) => `http://127.0.0.1:${port}/mcp`;
 
 export function McpPanel({ onClose }: Props) {
-  const api = window.atlasDesktop?.mcp;
+  const api = window.vectorDesktop?.mcp;
   const [status, setStatus] = useState<McpStatus | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

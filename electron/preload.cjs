@@ -6,7 +6,7 @@ function subscribe(channel, callback) {
   return () => ipcRenderer.removeListener(channel, listener);
 }
 
-contextBridge.exposeInMainWorld("atlasDesktop", {
+contextBridge.exposeInMainWorld("vectorDesktop", {
   mcp: {
     status: () => ipcRenderer.invoke("mcp:status"),
     start: () => ipcRenderer.invoke("mcp:start"),

@@ -126,13 +126,13 @@ function visibleTools() {
 function callRenderer(name, input, client) {
   const win = mcp.mainWin;
   if (!win || win.isDestroyed() || win.webContents.isLoading()) {
-    return Promise.reject(new Error("Atlas non è ancora pronto: riprova tra qualche secondo."));
+    return Promise.reject(new Error("Vector non è ancora pronto: riprova tra qualche secondo."));
   }
   const id = randomUUID();
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       mcp.pending.delete(id);
-      reject(new Error("Atlas non ha risposto in tempo."));
+      reject(new Error("Vector non ha risposto in tempo."));
     }, MCP_CALL_TIMEOUT_MS);
     mcp.pending.set(id, { resolve, reject, timer });
     win.webContents.send("mcp:call", { id, name, input, client });
@@ -162,7 +162,7 @@ async function startServer() {
     callTool: (name, input, client) => {
       const tool = mcp.tools.find((t) => t.name === name);
       if (!tool) throw new Error(`Strumento sconosciuto: ${name}`);
-      if (!tool.readOnly && !mcp.writeEnabled) throw new Error("Le modifiche sono disattivate in Atlas.");
+      if (!tool.readOnly && !mcp.writeEnabled) throw new Error("Le modifiche sono disattivate in Vector.");
       return callRenderer(name, input, client);
     },
   });

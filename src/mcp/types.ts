@@ -22,7 +22,7 @@ export interface McpCall {
   client: string;
 }
 
-export interface AtlasDesktopApi {
+export interface VectorDesktopApi {
   mcp: {
     status: () => Promise<McpStatus>;
     start: () => Promise<McpStatus>;
@@ -41,6 +41,6 @@ export interface AtlasDesktopApi {
 
 declare global {
   interface Window {
-    atlasDesktop?: AtlasDesktopApi;
+    vectorDesktop?: VectorDesktopApi;
   }
 }

@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="icon.png" alt="Logo di Atlas" width="120" />
+  <img src="icon.png" alt="Logo di Vector" width="120" />
 </p>
 
-<h1 align="center">Atlas</h1>
+<h1 align="center">Vector</h1>
 
 <p align="center">
   Portale per gli schemi architetturali e i documenti del Solution Architect, organizzati per progetto.
@@ -75,17 +75,17 @@ Istruzioni complete per l'installazione, il tunnel e la configurazione dei clien
 
 ## Generare un diagramma con un'AI
 
-<img src="docs/assets/demo-ai-workflow.svg" alt="Schema del flusso: schema + descrizione -> AI -> JSON -> Apri file in Atlas" width="100%" />
+<img src="docs/assets/demo-ai-workflow.svg" alt="Schema del flusso: schema + descrizione -> AI -> JSON -> Apri file in Vector" width="100%" />
 
-<sub>Schema illustrativo del flusso (i primi passi avvengono fuori da Atlas, in una chat AI esterna).</sub>
+<sub>Schema illustrativo del flusso (i primi passi avvengono fuori da Vector, in una chat AI esterna).</sub>
 
-Atlas legge un formato JSON documentato riga per riga in [`AI_DIAGRAM_SCHEMA.md`](AI_DIAGRAM_SCHEMA.md). Il flusso consigliato per partire da zero è:
+Vector legge un formato JSON documentato riga per riga in [`AI_DIAGRAM_SCHEMA.md`](AI_DIAGRAM_SCHEMA.md). Il flusso consigliato per partire da zero è:
 
 1. **Copia l'intero contenuto** di [`AI_DIAGRAM_SCHEMA.md`](AI_DIAGRAM_SCHEMA.md) in una qualsiasi chat AI (ChatGPT, Gemini, Claude, ecc.).
 2. **Nello stesso messaggio**, descrivi in linguaggio naturale l'architettura o il flusso da rappresentare: sistemi coinvolti, come comunicano, eventuali passi di un processo.
 3. Chiedi che la risposta sia **solo il JSON**, senza testo intorno e senza blocco di codice markdown.
 4. Salva la risposta in un file `.json`.
-5. In Atlas, apri quel file con **"Apri file"** nella barra degli strumenti dell'editor (icona cartella, in basso a destra). Il diagramma si apre direttamente.
+5. In Vector, apri quel file con **"Apri file"** nella barra degli strumenti dell'editor (icona cartella, in basso a destra). Il diagramma si apre direttamente.
 6. **Integra, correggi o estendi** il risultato a mano nell'editor (entità, collegamenti, flussi, icone...), oppure torna dalla stessa AI con il problema riscontrato e chiedi una correzione, poi reimporta.
 
 Il documento dello schema include anche le regole di layout (dimensioni di entità e bande, percorsi dei collegamenti) e un esempio minimo completo da incollare subito per verificare che l'importazione funzioni.
@@ -122,7 +122,7 @@ npm run build:electron
 
 Compila il frontend e genera l'installer Windows (NSIS) in `release/`.
 
-Se cambi `icon.png` nella root del progetto, rigenera le icone usate dall'app desktop
+Se cambi il logo in `public/vector-logo.png`, rigenera le icone usate dall'app desktop
 (`build/icon.ico` per l'installer, `build/icon.png` per l'icona della finestra) prima di
 lanciare `build:electron`:
 

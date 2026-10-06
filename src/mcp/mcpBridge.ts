@@ -1,7 +1,7 @@
 import { describeMcpTools, runMcpTool } from "./mcpTools";
 
 export function connectMcpBridge(): () => void {
-  const api = window.atlasDesktop?.mcp;
+  const api = window.vectorDesktop?.mcp;
   if (!api) return () => {};
 
   api.registerTools(describeMcpTools());
